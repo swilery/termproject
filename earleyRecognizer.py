@@ -24,9 +24,11 @@ with open(grammarFile, 'r') as reader:
         '''
         preNodes.pop()
         #nonterminal = preNodes[0];
+        nodes = set()
         for preNode in preNodes:
-           print preNode
-           for i in range(len(preNode)):
-               print i
-
+            for i in range(len(preNode)):
+                node = preNode[:i] + '.' + preNode[i:]
+                nodes.add(node)
+            nodes.add(preNode + '.')
         print preNodes
+        print nodes
