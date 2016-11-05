@@ -14,6 +14,7 @@ class Edge:
 
 class GFG:
     dot = "."
+    DEBUG = True
 
     def __init__(self):
         self.startNode = None
@@ -29,14 +30,26 @@ class GFG:
         start.edges.add(newEdge);
         return newEdge
 
+
+
+    def dbPrint(*args):
+        argsLength = len(args)
+        if argsLength == 2:
+            print "\t\tCreated Node: "+args[1]
+        elif argsLength == 4:
+            print "\t\tCreated Edge: ("+args[1]+", "+args[2]+")"
+            print "\t\t\t\tWeight: "+args[3]
+        else:
+            print "dbPrint() was passed an invalid number of arguments"
+
     def build(self,grammarFile):
         with open(grammarFile,"r") as reader:
             for production in reader:
                 production = production.replace(" ","")
                 preNodes = re.split("->|[|]|\n",production)
                 '''
-                The last element of preNodes is the empty string. We don't want it so
-                let's pop it.
+                The last element of preNodes is the empty string. We don't want
+                it so let's pop it.
                 '''
                 preNodes.pop()
                 nonterminal = preNodes[0]
@@ -49,6 +62,9 @@ class GFG:
                 if self.graphNodes.get(nonterminalStart) == None:
                     newEndNode = self.make_node(None,nonterminalEnd)
                     newStartNode = self.make_node(newEndNode,nonterminalStart)
+                    if self.DEBUG:
+                        self.dbPrint(nonterminalStart)
+                        self.dbPrint(nonterminalEnd)
                     self.graphNodes[nonterminalEnd] = newEndNode
                     self.graphNodes[nonterminalStart] = newStartNode
                 else:
@@ -59,12 +75,12 @@ class GFG:
                     #Need to keep track of first node
                     startNode = newStartNode
             
-                print "Start node: "+newStartNode.value
-                print "End node: "+newEndNode.value
-                print "Production: "+str(preNodes)
+                if self.DEBUG:
+                    print "Production: "+str(preNodes)
         
                 for i in range(1,len(preNodes)):
-                    print "\tEvaluating "+preNodes[i]
+                    if self.DEBUG:
+                        print "\tBegin Evaluating "+preNodes[i]
                     prevNode = newStartNode
                     #The [1:] gets rid of the leading period
                     productionString = newStartNode.value[1:]+"->"+self.dot+preNodes[i]
@@ -72,8 +88,10 @@ class GFG:
                     newNode = self.make_node(None,productionString)
                     newEdge = self.make_edge(prevNode,newNode,"epsilon")
 
-                    print "\t created node "+productionString
-                    print "\t created edge from "+prevNode.value+" to "+newNode.value+" weighted epsilon"
+                    if self.DEBUG:
+                        self.dbPrint(productionString)
+                        self.dbPrint(prevNode.value, newNode.value, "epsilon")
+
                     counter = 0;
                     for c in preNodes[i]:
                         prevNode = newNode
@@ -81,7 +99,9 @@ class GFG:
                         productionString = newStartNode.value[1:]+"->"+preNodes[i][0:counter]+c+self.dot+preNodes[i][counter+1:]
                         newNode = self.make_node(None,productionString)
                         counter+=1
-                        print "\t created node "+productionString
+
+                        if self.DEBUG:
+                            self.dbPrint(productionString)
 
                         '''
 
@@ -104,20 +124,26 @@ class GFG:
                             if nonTerminalStartNode == None:
                                 nonTerminalEndNode = self.make_node(None,ntEnd)
                                 nonTerminalStartNode = self.make_node(nonTerminalEndNode,ntStart)
-                                print "\t created non-terminal start node "+ntStart
-                                print "\t created non-terminal end node "+ntEnd
+                                if self.DEBUG:
+                                    self.dbPrint(ntStart)
+                                    self.dbPrint(ntEnd)
                                 self.graphNodes[ntStart] = nonTerminalStartNode
                                 self.graphNodes[ntEnd] = nonTerminalEndNode
                             else:
-                                nonTerminalEndNode = self.graphNodes.get(ntEnd)
+                                #nonTerminalEndNode = self.graphNodes.get(ntEnd)
+                                nonTerminalStartNode = self.graphNodes.get(ntStart)
+                                nonTerminalEndNode = nonTerminalStartNode.endNode
                             newStartEdge = self.make_edge(prevNode,nonTerminalStartNode,"epsilon")
                             newEndEdge = self.make_edge(nonTerminalEndNode,newNode,"epsilon")
-                            print "\t created edge from "+prevNode.value+" to "+nonTerminalStartNode.value+" weighted epsilon"
-                            print "\t created edge from "+nonTerminalEndNode.value+" to "+newNode.value+" weighted epsilon"
+                            if self.DEBUG:
+                                self.dbPrint(prevNode.value, nonTerminalStartNode.value, "epsilon")
+                                self.dbPrint(nonTerminalEndNode.value, newNode.value, "epsilon")
                         else:
                             newEdge = self.make_edge(prevNode,newNode,c)
-                            print "\t created edge from "+prevNode.value+" to "+newNode.value+" weighted "+c
+                            if self.DEBUG:
+                                self.dbPrint(prevNode.value, newNode.value, c)
                     
                     endEdge = self.make_edge(newNode,newEndNode,"epsilon")
-                    print "\t created edge from "+newNode.value+" to "+newEndNode.value+" weighted epsilon"
-                    print "\tFinished evaluating "+preNodes[i]+"\n"
+                    if self.DEBUG:
+                        self.dbPrint(newNode.value, newEndNode.value, "epsilon")
+                        print "\tFinished Evaluating "+preNodes[i]+"\n"
