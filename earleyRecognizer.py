@@ -34,6 +34,24 @@ while counter <= len(stringToParse) && continueSearch:
     #initialize sigma set with id set to counter value
     sigmaSet = sigmaSet.SSet(counter)
 
+    # Node search. NOT COMPLETE AND/OR CORRECT IN ANY WAY
+    while len(nodesToSearch) > 0:
+        node = nodesToSearch.pop()
+        edges = node.edges
+        for e in edges:
+            if e.weight == "epsilon":
+                endNode = e.endNode
+                if endNode.endNode != None:
+                    isCallNode = True
+                else:
+                    isCallNode = False
+                if isCallNode:
+                    sigmaSet.insertSigmaCallItem(endNode,counter)
+                else:
+                    sigmaSet.insertSigmaSetItem(endNode,counter)
+                nodesToSearch.push(endNode)
+            
+            
     #add nodes and do algorithm
     #add sigma set to list of sets
     sigmaSets.insert(sigmaSet)
