@@ -1,11 +1,10 @@
 import re
 
 class Node:
-#    edges = []
-
     def __init__(self,node,name):
         self.endNode = node
         self.value = name
+        self.edges = set()
 
 class Edge:
     def __init__(self,start,end,value):
@@ -26,8 +25,8 @@ class GFG:
 
     def make_edge(self,start,end,value):
         newEdge = Edge(start,end,value)
-    # add edge to list of outgoing edges in start node
-#    start.edges.append(newEdge);
+        # add edge to list of outgoing edges in start node
+        start.edges.add(newEdge);
         return newEdge
 
     def build(self,grammarFile):
@@ -56,9 +55,9 @@ class GFG:
                     newStartNode = self.graphNodes.get(nonterminalStart)
                     newEndNode = newStartNode.endNode
         
-#        if nonterminalStart == "S"+dot:
-            #Need to keep track of first node
-#            startNode = newStartNode
+                if nonterminalStart == self.dot+"S":
+                    #Need to keep track of first node
+                    startNode = newStartNode
             
                 print "Start node: "+newStartNode.value
                 print "End node: "+newEndNode.value
