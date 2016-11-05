@@ -51,7 +51,7 @@ while counter <= len(stringToParse) && continueSearch:
                     sigmaSet.insertSigmaSetItem(endNode,counter)
                 nodesToSearch.push(endNode)
             
-            
+    nodesToSearch = sigmaSet.findEndPoints()        
     #add nodes and do algorithm
     #add sigma set to list of sets
     sigmaSets.insert(sigmaSet)
