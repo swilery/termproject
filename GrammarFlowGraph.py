@@ -73,7 +73,7 @@ class GFG:
         
                 if nonterminalStart == self.dot+"S":
                     #Need to keep track of first node
-                    startNode = newStartNode
+                    self.startNode = newStartNode
             
                 if self.DEBUG:
                     print "Production: "+str(preNodes)
