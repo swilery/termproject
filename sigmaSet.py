@@ -11,21 +11,21 @@ class SSet:
         self.nodeSet = {}
         self.id = num
 
-    def makeSigmaSetItem(node, counter):
+    def makeSigmaSetItem(self,node, counter):
         newSigmaSetItem = sigmaSetItem(node,counter)
         return newSigmaSetItem
 
-    def insertSigmaSetItem(node, counter):
+    def insertSigmaSetItem(self,node, counter):
         sigmaItem = self.makeSigmaSetItem(node,counter)
         key = node.value + str(counter)
         self.nodeSet[key] = sigmaItem
 
-    def insertSigmaCallItem(node, counter):
+    def insertSigmaCallItem(self,node, counter):
         sigmaItem = self.makeSigmaSetItem(node,counter)
         key = node.value + str(counter)
         self.callSet[key] = sigmaItem
 
-    def findEndPoints:
+    def findEndPoints(self):
         '''
         Go through nodeSet and find all nodes whose end node
         with a counter matching it's own is not in the sigma set.
@@ -34,16 +34,17 @@ class SSet:
         edge to the start node, therefore, will never applicable
         '''
         initialNodes = []
-        for n in nodeSet.keys:
-            sigmaItem = nodeSet.get(n)
+        for n in self.nodeSet:
+            sigmaItem = self.nodeSet.get(n)
             sigmaNode = sigmaItem.node
             sigmaNodeCounter = sigmaItem.counter
+            noEndNode = False
             for e in sigmaNode.edges:
-                noEndNode = False
                 end = e.endNode
                 testKey = end.value + str(sigmaNodeCounter)
-                if nodeSet.get(testKey) == None && noEndNode == False:
-                    initialNodes.insert(sigmaNode)
+                if self.nodeSet.get(testKey) == None and noEndNode == False:
+                    initialNodes.append(sigmaNode)
                     noEndNode = True
-                    # end node not in sigma set, 
+                    # end node not in sigma set, so we want to
+                    # start searching with this node 
         return initialNodes

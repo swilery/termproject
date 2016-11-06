@@ -1,6 +1,6 @@
 import sys
 import GrammarFlowGraph
-import sigmaSet
+import SigmaSet
 
 if len(sys.argv) != 4:
     print "Usage: python earleyRecognizer.py grammerFile stringFile parseString"
@@ -17,10 +17,18 @@ counter = 0
 dot = "."
 sigmaSets = []
 
-nodesToSearch.push(start)
+#Set up our Sigma Set0 initially with the start node
+nodesToSearch = []
+nodesToSearch.append(start)
+sigmaSet = SigmaSet.SSet(0)
+sigmaSet.insertSigmaSetItem(start,counter)
+sigmaSets.append(sigmaSet)
 continueSearch = True
+
 #iterate through characters in string to parse
-while counter <= len(stringToParse) && continueSearch:
+# we want to iterate while we have more characters to parse
+# and nodes in our last sigma set that need searching
+while counter <= len(stringToParse) and len(nodesToSearch)>0:
     
     # string manipulation to adjust period and get character we are looking for
     
@@ -31,39 +39,38 @@ while counter <= len(stringToParse) && continueSearch:
     elif len(charToSearch) > 1:
         charToSearch = charToSearch[-1:]
         
-    #initialize sigma set with id set to counter value
-    sigmaSet = sigmaSet.SSet(counter)
+    #get our sigma set from our list for this iteration
+        
+    sigmaSet = sigmaSets[counter]
 
-    # Node search. NOT COMPLETE AND/OR CORRECT IN ANY WAY
-    while len(nodesToSearch) > 0:
-        node = nodesToSearch.pop()
-        edges = node.edges
-        for e in edges:
-            if e.weight == "epsilon":
-                endNode = e.endNode
-                if endNode.endNode != None:
-                    isCallNode = True
-                else:
-                    isCallNode = False
-                if isCallNode:
-                    sigmaSet.insertSigmaCallItem(endNode,counter)
-                else:
-                    sigmaSet.insertSigmaSetItem(endNode,counter)
-                nodesToSearch.push(endNode)
-            
-    nodesToSearch = sigmaSet.findEndPoints()        
-    #add nodes and do algorithm
-    #add sigma set to list of sets
-    sigmaSets.insert(sigmaSet)
+                   
     '''
-    When searching nodes...
-    - if the weight of edge is epsilon, add node to sigma set and continue
-    - if the weight of edge is a character are looking for, add node to sigma set
-        and halt search and path is still valid
-    - if the weight of edge is a character we are not looking for, halt
-        and path is no longer valid
+
+          i think recursively with dfs matches best here
+
+          dfs(node, charToSearch, sigmaSet)
+              For all outgoing edges from said node
+              - if weight is epsilon,
+                  add end node to sigma set
+                  call dfs(node, charToSearch, sigmaSet)
+              - if weight is c,
+                  add end node to sigma set
+                  call dfs (node, "epsilon", sigmaSet)
+              - if weight is not c and not epsilon, return 0
+              
     '''
+
+    # find nodes in last sigma set with outgoing edges to nodes
+    # not in our graph. These are the nodes we want to start our
+    # search with next iteration
+    # if the sigma set is empty, then nodesToSearch will also be empty
+    # and our loop will quit
+    nodesToSearch = sigmaSet.findEndPoints()
+    
+    #create sigma set for next round
     counter+=1
+    sigmaSet = SigmaSet.SSet(counter)
+    sigmaSets.append(sigmaSet)
 
 # if we went through the whole string, and the
 # end node is in the last sigma set
