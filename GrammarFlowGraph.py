@@ -1,10 +1,21 @@
 import re
 
 class Node:
-    def __init__(self,node,name):
+    # if a node is a call node with a return,
+    # we want to treat that differently than
+    # start/end nodes of a non-terminal
+    # is there a better way to structure this?
+    def __init__(self,node,name,callN):
         self.endNode = node
+        self.callNode = callN
         self.value = name
         self.edges = set()
+
+    def isExitNode(self):
+        if self.value[-1] == "." and len(self.value)==2:
+            return True
+        else:
+            return False
 
 class Edge:
     def __init__(self,start,end,value):
@@ -14,14 +25,14 @@ class Edge:
 
 class GFG:
     dot = "."
-    DEBUG = True
+    DEBUG = False
 
     def __init__(self):
         self.startNode = None
         self.graphNodes = {}
 
     def make_node(self,node,name):
-        newNode = Node(node,name)
+        newNode = Node(node,name,None)
         return newNode
 
     def make_edge(self,start,end,value):
@@ -135,6 +146,9 @@ class GFG:
                                 nonTerminalEndNode = nonTerminalStartNode.endNode
                             newStartEdge = self.make_edge(prevNode,nonTerminalStartNode,"epsilon")
                             newEndEdge = self.make_edge(nonTerminalEndNode,newNode,"epsilon")
+                            # since this means prevNode and newNode are call/return blocks
+                            # we will add a ref to new node in prev node
+                            prevNode.callNode = newNode
                             if self.DEBUG:
                                 self.dbPrint(prevNode.value, nonTerminalStartNode.value, "epsilon")
                                 self.dbPrint(nonTerminalEndNode.value, newNode.value, "epsilon")
