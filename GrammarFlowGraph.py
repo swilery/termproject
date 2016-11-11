@@ -1,4 +1,5 @@
 import re
+import codecs
 
 class Node:
     # if a node is a call node with a return,
@@ -26,6 +27,7 @@ class Edge:
 class GFG:
     dot = "."
     DEBUG = False
+    EPSILON = unichr(949)
 
     def __init__(self):
         self.startNode = None
@@ -54,7 +56,7 @@ class GFG:
             print "dbPrint() was passed an invalid number of arguments"
 
     def build(self,grammarFile):
-        with open(grammarFile,"r") as reader:
+        with codecs.open(grammarFile, encoding='utf-8',mode='r') as reader:
             for production in reader:
                 production = production.replace(" ","")
                 preNodes = re.split("->|[|]|\n",production)
@@ -153,6 +155,8 @@ class GFG:
                                 self.dbPrint(prevNode.value, nonTerminalStartNode.value, "epsilon")
                                 self.dbPrint(nonTerminalEndNode.value, newNode.value, "epsilon")
                         else:
+                            if c==self.EPSILON:
+                                c = "epsilon"
                             newEdge = self.make_edge(prevNode,newNode,c)
                             if self.DEBUG:
                                 self.dbPrint(prevNode.value, newNode.value, c)
