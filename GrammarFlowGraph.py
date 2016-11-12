@@ -26,7 +26,7 @@ class Edge:
 
 class GFG:
     dot = "."
-    DEBUG = False
+    DEBUG = True
     EPSILON = unichr(949)
 
     def __init__(self):
@@ -43,8 +43,6 @@ class GFG:
         start.edges.add(newEdge);
         return newEdge
 
-
-
     def dbPrint(*args):
         argsLength = len(args)
         if argsLength == 2:
@@ -58,19 +56,21 @@ class GFG:
     def build(self,grammarFile):
         with codecs.open(grammarFile, encoding='utf-8',mode='r') as reader:
             for production in reader:
-                production = production.replace(" ","")
+                #production = production.replace(" ","")
                 preNodes = re.split("->|[|]|\n",production)
                 '''
                 The last element of preNodes is the empty string. We don't want
                 it so let's pop it.
                 '''
                 preNodes.pop()
-                nonterminal = preNodes[0]
+                preNodes = map(lambda s: s.strip(), preNodes)
+                preNodes = map(lambda s: s.split(), preNodes)
+                nonterminal = preNodes[0][0]
                 nonterminalStart = self.dot+nonterminal
                 nonterminalEnd = nonterminal+self.dot
 
-                if len(nonterminal) > 1:
-                    print "Error with production "+preNodes
+#                if len(nonterminal) > 1:
+#                    print "Error with production "+str(preNodes)
             
                 if self.graphNodes.get(nonterminalStart) == None:
                     newEndNode = self.make_node(None,nonterminalEnd)
@@ -93,10 +93,13 @@ class GFG:
         
                 for i in range(1,len(preNodes)):
                     if self.DEBUG:
-                        print "\tBegin Evaluating "+preNodes[i]
+                        print "\tBegin Evaluating "+preNodes[i][0]
                     prevNode = newStartNode
                     #The [1:] gets rid of the leading period
-                    productionString = newStartNode.value[1:]+"->"+self.dot+preNodes[i]
+                    print "=============================================="
+                    print preNodes[i][0]
+                    print "=============================================="
+                    productionString = newStartNode.value[1:]+"->"+self.dot+preNodes[i][0]
 
                     newNode = self.make_node(None,productionString)
                     newEdge = self.make_edge(prevNode,newNode,"epsilon")
@@ -107,9 +110,19 @@ class GFG:
 
                     counter = 0;
                     for c in preNodes[i]:
+                        print "----------------------------------------------"
+                        print preNodes[i]
+                        print preNodes[i][0:counter]
+                        if preNodes[i][0:counter] != []:
+                            print preNodes[i][0:counter][-1]
+                        print c
+                        if preNodes[i][counter+1:] != []:
+                            print preNodes[i][counter+1:][0]
+                        print preNodes[i][counter+1:]
+                        print preNodes[i]
+                        print "----------------------------------------------"
                         prevNode = newNode
-                
-                        productionString = newStartNode.value[1:]+"->"+preNodes[i][0:counter]+c+self.dot+preNodes[i][counter+1:]
+                        productionString = newStartNode.value[1:]+"->"+preNodes[i][0][0:counter]+c+self.dot+preNodes[i][0][counter+1:]
                         newNode = self.make_node(None,productionString)
                         counter+=1
 
@@ -164,4 +177,4 @@ class GFG:
                     endEdge = self.make_edge(newNode,newEndNode,"epsilon")
                     if self.DEBUG:
                         self.dbPrint(newNode.value, newEndNode.value, "epsilon")
-                        print "\tFinished Evaluating "+preNodes[i]+"\n"
+                        print "\tFinished Evaluating "+preNodes[i][0]+"\n"
