@@ -26,7 +26,7 @@ class Edge:
 
 class GFG:
     dot = "."
-    DEBUG = True
+    DEBUG = False
     EPSILON = unichr(949)
 
     def __init__(self):
@@ -68,10 +68,7 @@ class GFG:
                 nonterminal = preNodes[0][0]
                 nonterminalStart = self.dot+nonterminal
                 nonterminalEnd = nonterminal+self.dot
-
-#                if len(nonterminal) > 1:
-#                    print "Error with production "+str(preNodes)
-            
+           
                 if self.graphNodes.get(nonterminalStart) == None:
                     newEndNode = self.make_node(None,nonterminalEnd)
                     newStartNode = self.make_node(newEndNode,nonterminalStart)
@@ -96,11 +93,8 @@ class GFG:
                         print "\tBegin Evaluating "+preNodes[i][0]
                     prevNode = newStartNode
                     #The [1:] gets rid of the leading period
-                    print "=============================================="
-                    print preNodes[i][0]
-                    print "=============================================="
-                    productionString = newStartNode.value[1:]+"->"+self.dot+preNodes[i][0]
-
+                    productionString = [newStartNode.value[1:]]+["->"]+[self.dot]+preNodes[i][0:]
+                    productionString = ''.join(productionString)
                     newNode = self.make_node(None,productionString)
                     newEdge = self.make_edge(prevNode,newNode,"epsilon")
 
@@ -110,19 +104,11 @@ class GFG:
 
                     counter = 0;
                     for c in preNodes[i]:
-                        print "----------------------------------------------"
-                        print preNodes[i]
-                        print preNodes[i][0:counter]
-                        if preNodes[i][0:counter] != []:
-                            print preNodes[i][0:counter][-1]
-                        print c
-                        if preNodes[i][counter+1:] != []:
-                            print preNodes[i][counter+1:][0]
-                        print preNodes[i][counter+1:]
-                        print preNodes[i]
-                        print "----------------------------------------------"
+                        
                         prevNode = newNode
-                        productionString = newStartNode.value[1:]+"->"+preNodes[i][0][0:counter]+c+self.dot+preNodes[i][0][counter+1:]
+                        charlist = [c, self.dot]
+                        productionString = [newStartNode.value[1:]]+["->"]+preNodes[i][0:counter]+charlist+preNodes[i][counter+1:]
+                        productionString = ''.join(productionString)
                         newNode = self.make_node(None,productionString)
                         counter+=1
 
