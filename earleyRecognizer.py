@@ -14,13 +14,15 @@ def isEdgeValidPath(nodeValue,ctr,counter,endNode):
     nodeValue = "."+nodeValue[:-1]
     nodeValueKey = nodeValue+str(ctr)
     sset = {}
+    if DEBUG:
+        print "Looking for "+nodeValueKey+" in sset "+str(counter)
     while(counter>=0):
         sset = sigmaSets[counter]
         if sset.nodeSet.get(nodeValueKey)!= None:
             break
         counter-=1
     if counter<0:
-        print "ERROR! No starting node found for "+nodeValue
+        print "ERROR! No starting node found for "+nodeValueKey
         sys.exit()
     callSet = sset.callSet
     for callKey in callSet:
@@ -41,9 +43,9 @@ def dfsGFG(node, char, sset,ctr,counter):
             print "Evaluating edge from "+node.value+" to "+end.value
         proceed = True
         if node.isExitNode():
-            if DFSDEBUG:
-                print node.value + "is an exit node "
             proceed = isEdgeValidPath(node.value,ctr,counter,end)
+            if DFSDEBUG:
+                print node.value + "is an exit node, can we proeed? "+str(proceed)
         if not proceed:
             continue
         if e.weight != char and e.weight != "epsilon":
@@ -83,7 +85,7 @@ def main():
     stringFile = sys.argv[2]
     gfg = GrammarFlowGraph.GFG()
     gfg.build(grammarFile)
-    sys.exit()
+
     start = gfg.startNode
     counter = 0 
     dot = "."
@@ -100,20 +102,21 @@ def main():
 
     with codecs.open(stringFile, encoding='utf-8',mode='r') as reader:
         parseString = reader.read().replace("\n", "")
+
+    parseString = parseString.split(" ")
+    parseString = [""]+parseString
     
     #iterate through characters in string to parse
     # we want to iterate while we have more characters to parse
     # and nodes in our last sigma set that need searching
-    while counter <= (len(parseString)) and len(nodesToSearch)>0:
+    while counter < (len(parseString)) and len(nodesToSearch)>0:
         # string manipulation to adjust period and get character we are looking for
-        #posString = stringFile[0:counter]+dot+stringFile[counter:]
-        posString = parseString[0:counter]+dot+parseString[counter:]
-        charToSearch = stringFile[0:counter]
-        charToSearch = parseString[0:counter]
+        # I just realized the bit below isn't needed
+        # posString = stringFile[0:counter]+dot+stringFile[counter:]
+
+        charToSearch = parseString[counter]
         if len(charToSearch) == 0:
-            charToSearch = "epsilon"
-        elif len(charToSearch) > 1:
-            charToSearch = charToSearch[-1:]   
+            charToSearch = "epsilon"  
         #get our sigma set from our list for this iteration
             
         sigmaSet = sigmaSets[counter]
@@ -142,8 +145,8 @@ def main():
     # if we went through the whole string, and the
     # end node is in the last sigma set
     validString = False
-    #if counter>len(stringFile):
-    if counter>len(parseString):
+ 
+    if counter>=len(parseString):
         end = start.endNode
         lastSigmaSet = sigmaSets[counter-1]
         # we don't know what the associated counter with our end node is
