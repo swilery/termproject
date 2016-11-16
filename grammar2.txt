@@ -1,0 +1,3 @@
+P -> NP IP
+IP -> NP verb
+NP -> epsilon | noun

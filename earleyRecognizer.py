@@ -1,6 +1,7 @@
 import sys
 import GrammarFlowGraph
 import SigmaSet
+import codecs
 
 sigmaSets = []
 DEBUG = False
@@ -82,7 +83,7 @@ def main():
     stringFile = sys.argv[2]
     gfg = GrammarFlowGraph.GFG()
     gfg.build(grammarFile)
-
+    sys.exit()
     start = gfg.startNode
     counter = 0 
     dot = "."
@@ -97,13 +98,18 @@ def main():
     sigmaSets.append(sigmaSet)
     continueSearch = True
 
+    with codecs.open(stringFile, encoding='utf-8',mode='r') as reader:
+        parseString = reader.read().replace("\n", "")
+    
     #iterate through characters in string to parse
     # we want to iterate while we have more characters to parse
     # and nodes in our last sigma set that need searching
-    while counter <= (len(stringFile)) and len(nodesToSearch)>0:
+    while counter <= (len(parseString)) and len(nodesToSearch)>0:
         # string manipulation to adjust period and get character we are looking for
-        posString = stringFile[0:counter]+dot+stringFile[counter:]
+        #posString = stringFile[0:counter]+dot+stringFile[counter:]
+        posString = parseString[0:counter]+dot+parseString[counter:]
         charToSearch = stringFile[0:counter]
+        charToSearch = parseString[0:counter]
         if len(charToSearch) == 0:
             charToSearch = "epsilon"
         elif len(charToSearch) > 1:
@@ -136,7 +142,8 @@ def main():
     # if we went through the whole string, and the
     # end node is in the last sigma set
     validString = False
-    if counter>len(stringFile):
+    #if counter>len(stringFile):
+    if counter>len(parseString):
         end = start.endNode
         lastSigmaSet = sigmaSets[counter-1]
         # we don't know what the associated counter with our end node is
