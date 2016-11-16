@@ -1,0 +1,4 @@
+ -> E
+ E -> E Q F | F
+ F -> a
+ Q -> x | / | epsilon
