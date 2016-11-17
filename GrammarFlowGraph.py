@@ -65,6 +65,7 @@ class GFG:
                 preNodes.pop()
                 preNodes = map(lambda s: s.strip(), preNodes)
                 preNodes = map(lambda s: s.split(), preNodes)
+                #print preNodes
                 nonterminal = preNodes[0][0]
                 nonterminalStart = self.dot+nonterminal
                 nonterminalEnd = nonterminal+self.dot

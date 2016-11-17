@@ -34,7 +34,7 @@ def isEdgeValidPath(nodeValue,ctr,counter,endNode):
                     return True
     return False
 
-def dfsGFG(node, char, sset,ctr,counter):
+def dfsGFG(node,char,sset,ctr,counter):
     if DFSDEBUG:
         print "Evaluating node "+node.value+" with counter "+str(ctr)+" looking for "+char
     for e in node.edges:
@@ -68,6 +68,10 @@ def dfsGFG(node, char, sset,ctr,counter):
             if e.weight == "epsilon":
                 if DFSDEBUG:
                     print "Edge weight is epsilon. Calling DFS again..."
+                '''
+                This overflows the recursion limit in Python. We need a way to
+                perform DFS without dfsGFG actually calling itself. 
+                '''
                 dfsGFG(end,char,sset,ctr,counter)
             else:
                 if DFSDEBUG:
@@ -126,8 +130,8 @@ def main():
             if DEBUG:
                 print sigmaN + " looking for " + charToSearch
             ctr = sigmaN[-1]
-            dfsGFG(n,charToSearch, sigmaSet,ctr,counter)
-
+            dfsGFG(n,charToSearch,sigmaSet,ctr,counter)
+           
         
         # find nodes in last sigma set with outgoing edges to nodes
         # not in our graph. These are the nodes we want to start our
