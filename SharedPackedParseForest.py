@@ -36,8 +36,43 @@ class Edge:
     def printEdge(self):
         print self.toString()
 
+class SPPF:
+    def __init__(self):
+        self.nodes = set()
+        '''
+        This may be convoluted, but the intention is to have a dictionary in
+        which each key is a node u and each value is a set of nodes v such
+        that there is an edge from u to v. Intuitively, each node knows its
+        outgoing neighbors. It may or may not be useful for each nodes to know
+        its incoming neighbors as well.
+        '''
+        self.edges = {}
+
+    def addNode(self,node):
+        self.nodes.add(node)
+
+    def addEdge(self,edge):
+        if edge.startNode in self.edges:
+            self.edges[edge.startNode].add(edge.endNode)
+        else:
+            self.edges.update({edge.startNode:{edge.endNode}})
+
+    def printSPPF(self):
+        print {n.toString() for n in self.nodes}
+        # Crap, this is over 80 characters long.
+        print {u.toString()+" -> "+str({v.toString() for v in vs}) for u,vs in self.edges.items()}
+
 testNode1 = Node("W",1,2,NodeType.LEAF)
 testNode2 = Node("Z",1,4,NodeType.AND)
-testEdge = Edge(testNode2, testNode1);
-testNode1.printNode()
-testEdge.printEdge()
+testNode3 = Node("S",4,4,NodeType.LEAF)
+testEdge1 = Edge(testNode2, testNode1);
+testEdge2 = Edge(testNode2, testNode3);
+#testNode1.printNode()
+#testEdge.printEdge()
+sppf = SPPF()
+sppf.addNode(testNode1)
+sppf.addNode(testNode2)
+sppf.addNode(testNode3)
+sppf.addEdge(testEdge1)
+sppf.addEdge(testEdge2)
+sppf.printSPPF()
