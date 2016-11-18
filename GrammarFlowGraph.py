@@ -29,9 +29,13 @@ class GFG:
     DEBUG = False
     EPSILON = unichr(949)
 
-    def __init__(self):
+    def __init__(self,grammarFile):
         self.startNode = None
         self.graphNodes = {}
+        self.build(grammarFile)
+
+    def getDot(self):
+        return self.dot
 
     def make_node(self,node,name):
         newNode = Node(node,name,None)
@@ -164,4 +168,4 @@ class GFG:
                     endEdge = self.make_edge(newNode,newEndNode,"epsilon")
                     if self.DEBUG:
                         self.dbPrint(newNode.value, newEndNode.value, "epsilon")
-                        print "\tFinished Evaluating "+preNodes[i][0]+"\n"
+                        print "\tFinished Evaluating "+preNodes[i][0]+"\n" 
