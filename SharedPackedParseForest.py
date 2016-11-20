@@ -25,6 +25,12 @@ class Node:
     def printNode(self):
         print self.toString()
 
+    def updatePos(self,newStart,newEnd):
+        if newStart < self.startPos:
+            self.startPos = newStart
+        if newEnd > self.endPos:
+            self.endPos = newEnd
+
 class Edge:
     def __init__(self,startNode,endNode):
         self.startNode = startNode
@@ -39,6 +45,9 @@ class Edge:
 class SPPF:
     def __init__(self):
         self.nodes = set()
+        # we need to be able to look up nodes by names.
+        # didn't want to delete your code in case it does this 
+        self.nodeNames = {}
         '''
         This may be convoluted, but the intention is to have a dictionary in
         which each key is a node u and each value is a set of nodes v such
@@ -48,8 +57,18 @@ class SPPF:
         '''
         self.edges = {}
 
+    def makeNode(self,name,startPos,endPos,nodeType):
+        return Node(name,startPos,endPos,nodeType)
+
+    def makeEdge(self,startNode,endNode):
+        return Edge(startNode,endNode)
+
     def addNode(self,node):
         self.nodes.add(node)
+
+    #again - this may be redundant. placeholder for now
+    def updateNonLeafNodes(self,node):
+        self.nodeNames[node.name] = node
 
     def addEdge(self,edge):
         if edge.startNode in self.edges:
@@ -62,6 +81,7 @@ class SPPF:
         # Crap, this is over 80 characters long.
         print {u.toString()+" -> "+str({v.toString() for v in vs}) for u,vs in self.edges.items()}
 
+'''
 testNode1 = Node("W",1,2,NodeType.LEAF)
 testNode2 = Node("Z",1,4,NodeType.AND)
 testNode3 = Node("S",4,4,NodeType.LEAF)
@@ -76,3 +96,4 @@ sppf.addNode(testNode3)
 sppf.addEdge(testEdge1)
 sppf.addEdge(testEdge2)
 sppf.printSPPF()
+'''

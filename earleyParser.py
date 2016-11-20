@@ -1,6 +1,7 @@
 import sys
 import GrammarFlowGraph
 import SigmaSet
+import SharedPackedParseForest
 import codecs
 
 class Parser:
@@ -10,6 +11,7 @@ class Parser:
     def __init__(self,grammarFile,stringFile):
         self.gfg = GrammarFlowGraph.GFG(grammarFile)
         self.sigmaSets = []
+        self.tree = SharedPackedParseForest.SPPF()
         self.parse(stringFile)
 
     def getDot(self):
@@ -162,12 +164,13 @@ class Parser:
                     print "\nPath:\n"
                     endNode = lastSigmaSet.nodeSet.get(end)
                     self.retracePath(last,endNode)
+                    self.tree.printSPPF()
             print "This string is valid given grammar"
             #self.debugSigmaSets(last)
         else:
             print "This string is NOT valid given grammar"
 
-    def retracePath(self,num,endNode):
+    def retracePath(self,num,endNode,startIndex=0):
         sset = self.sigmaSets[num]
         isParent = False
         if self.gfg.graphNodes.get(endNode.node.value) != None:
@@ -187,23 +190,54 @@ class Parser:
                 if isParent:
                     print "NON-LEAF NODE : "+endNode.node.value[1:]
                     print "PARENT OF PARENT NODE : "+n.value[0:index]
+                    parent = self.tree.nodeNames.get(n.value[0:index])
+                    child = self.tree.nodeNames.get(endNode.node.value[1:])
+                    if parent != None:
+                        parent.updatePos(child.startPos,child.endPos)
+                    else:
+                        #TODO: change - AND by default
+                        parent = self.tree.makeNode(n.value[0:index],child.startPos,child.endPos,0)
+                        self.tree.addNode(parent)
+                        self.tree.updateNonLeafNodes(parent)
+                    leafparentedge = self.tree.makeEdge(parent,child)
                 if sset.nodeSet.get(keyToSearch)!=None:
                     edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
+                    
                     if edgeWeight != "epsilon":
+                        
                         print "LEAF : " + edgeWeight
+                        
+                        leaf = self.tree.makeNode(edgeWeight,startIndex,startIndex+1,2)
+                        self.tree.addNode(leaf)
+                        
                         print "LEAF PARENT : "+n.value[0:index]
+                        parent = self.tree.nodeNames.get(n.value[0:index])
+                        if parent != None:
+                            parent.updatePos(startIndex,startIndex+1)
+                        else:
+                            #TODO: change - AND by default 
+                            parent = self.tree.makeNode(n.value[0:index],startIndex,startIndex+1,0)
+                            self.tree.addNode(parent)
+                            self.tree.updateNonLeafNodes(parent)    
+
+                        leafparentedge = self.tree.makeEdge(parent,leaf)
+                        self.tree.addEdge(leafparentedge)
+                        startIndex+=1
+                        
                     endNode = sset.nodeSet.get(keyToSearch)
-                    self.retracePath(num,endNode)
+                    self.retracePath(num,endNode,startIndex)
                 elif sset.callSet.get(keyToSearch)!=None:
                     #is this needed? will it always be epsilon
+                    '''
                     edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
                     if edgeWeight != "epsilon":
                         print "LEAF : " + edgeWeight
                         print "LEAF PARENT : "+n.value[0:index]
+                    '''
                     endNode = sset.callSet.get(keyToSearch)
-                    self.retracePath(num,endNode)
+                    self.retracePath(num,endNode,startIndex)
                 else:
-                    self.retracePath((num-1),endNode)
+                    self.retracePath((num-1),endNode,startIndex)
 
     def debugSigmaSets(self,num):
         for i in range(0,num+1):
