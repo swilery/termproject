@@ -1,35 +1,40 @@
 class sigmaSetItem:
 
-    def __init__(self,node,counter):
+    def __init__(self,node,counter, prevNode=None, prevCounter=0):
         self.node = node
         self.counter = counter
+        self.prevNode = [[prevNode,prevCounter]]
 
 class SSet:
     DEBUG = False
-    def __init__(self, num, endNode=False):
+    def __init__(self, num, endNode=None):
         self.callSet = {}
         self.nodeSet = {}
         self.id = num
         self.hasEndNode = endNode
         
-    def makeSigmaSetItem(self,node, counter):
-        newSigmaSetItem = sigmaSetItem(node,counter)
+    def makeSigmaSetItem(self,node, counter, prevNode=None, prevCounter=0):
+        newSigmaSetItem = sigmaSetItem(node,counter, prevNode, prevCounter)
         return newSigmaSetItem
 
-    def insertSigmaSetItem(self,node, counter):
+    def insertSigmaSetItem(self,node, counter, prevNode=None, prevCounter=0):
         key = node.value + str(counter)
         if self.nodeSet.get(key) == None: 
-            sigmaItem = self.makeSigmaSetItem(node,counter)
+            sigmaItem = self.makeSigmaSetItem(node,counter, prevNode, prevCounter)
             self.nodeSet[key] = sigmaItem
             if node.value == "S.":
-                self.hasEndNode = True
-                self.endNodeCtr = counter
+                self.hasEndNode = key
+        elif prevNode != None:
+            self.nodeSet.get(key).prevNode.append([prevNode,prevCounter])
 
-    def insertSigmaCallItem(self,node, counter):
+
+    def insertSigmaCallItem(self,node, counter,prevNode=None, prevCounter=0):
         key = node.value + str(counter)
         if self.callSet.get(key) == None:           
-            sigmaItem = self.makeSigmaSetItem(node,counter)
+            sigmaItem = self.makeSigmaSetItem(node,counter,prevNode, prevCounter)
             self.callSet[key] = sigmaItem
+        elif prevNode != None:
+            self.callSet.get(key).prevNode.append([prevNode,prevCounter])
 
     def findEndPoints(self):
         '''

@@ -67,12 +67,12 @@ class Parser:
                 if end.callNode != None:
                     if self.DFSDEBUG:
                         print end.value + " IS a call node. Adding to call set with ctr "+str(counter)
-                    sset.insertSigmaCallItem(end,counter)
+                    sset.insertSigmaCallItem(end,counter,node,ctr)
                     ctr=counter
                 else:
                     if self.DFSDEBUG:
                         print end.value + " is NOT a call node. Adding to sigma set with ctr "+str(ctr)
-                    sset.insertSigmaSetItem(end,ctr)
+                    sset.insertSigmaSetItem(end,ctr,node,ctr)
                 if e.weight == "epsilon":
                     if self.DFSDEBUG:
                         print "Edge weight is epsilon. Calling DFS again..."
@@ -147,19 +147,75 @@ class Parser:
         # if we went through the whole string, and the
         # end node is in the last sigma set
         validString = False
-     
+        last = counter - 1
+        lastSigmaSet = self.sigmaSets[last]
         if counter>=len(parseString):
             end = start.endNode
-            lastSigmaSet = self.sigmaSets[counter-1]
             # we don't know what the associated counter with our end node is
             # therefore we need to loop through all nodes in our last sigma set
-            if lastSigmaSet.hasEndNode:
+            if lastSigmaSet.hasEndNode!=None:
                 validString = True
         if validString:
+            # for every end node in final set, call retrace path on it
+            for end in lastSigmaSet.nodeSet:
+                if end[0:2] == "S.":
+                    print "\nPath:\n"
+                    endNode = lastSigmaSet.nodeSet.get(end)
+                    self.retracePath(last,endNode)
             print "This string is valid given grammar"
+            #self.debugSigmaSets(last)
         else:
             print "This string is NOT valid given grammar"
 
+    def retracePath(self,num,endNode):
+        sset = self.sigmaSets[num]
+        isParent = False
+        if self.gfg.graphNodes.get(endNode.node.value) != None:
+            if endNode.node.value[0:2] != "S.":
+                if endNode.node.value[0] == ".":
+                    isParent = True
+        prevValue = ""
+        for nc in endNode.prevNode:
+            n = nc[0]
+            if n!=None:
+                if n.value == prevValue:
+                    continue
+                else:
+                    prevValue = n.value
+                keyToSearch = n.value + str(nc[1])
+                index = n.value.find('->')
+                if isParent:
+                    print "NON-LEAF NODE : "+endNode.node.value[1:]
+                    print "PARENT OF PARENT NODE : "+n.value[0:index]
+                if sset.nodeSet.get(keyToSearch)!=None:
+                    edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
+                    if edgeWeight != "epsilon":
+                        print "LEAF : " + edgeWeight
+                        print "LEAF PARENT : "+n.value[0:index]
+                    endNode = sset.nodeSet.get(keyToSearch)
+                    self.retracePath(num,endNode)
+                elif sset.callSet.get(keyToSearch)!=None:
+                    #is this needed? will it always be epsilon
+                    edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
+                    if edgeWeight != "epsilon":
+                        print "LEAF : " + edgeWeight
+                        print "LEAF PARENT : "+n.value[0:index]
+                    endNode = sset.callSet.get(keyToSearch)
+                    self.retracePath(num,endNode)
+                else:
+                    self.retracePath((num-1),endNode)
+
+    def debugSigmaSets(self,num):
+        for i in range(0,num+1):
+            print "SIGMA SET "+str(i)+":"
+            sset = self.sigmaSets[i]
+            print "NODE SET:"
+            for n in sset.nodeSet:
+                print n + " from " + str(len(sset.nodeSet.get(n).prevNode)) + " other nodes"
+            print "CALL SET:"
+            for c in sset.callSet:
+                print c
+    
 def main():
     if len(sys.argv) != 3:
             print "Usage: python earleyRecognizer.py grammerFile stringFile"

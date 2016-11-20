@@ -47,6 +47,12 @@ class GFG:
         start.edges.add(newEdge);
         return newEdge
 
+    def find_edge_weight(self,start,end):
+        for e in start.edges:
+            if e.endNode.value == end.value:
+                return e.weight
+        return "epsilon"
+
     def dbPrint(*args):
         argsLength = len(args)
         if argsLength == 2:
