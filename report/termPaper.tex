@@ -69,7 +69,7 @@
 \maketitle
 
 \begin{abstract}
-Earley's Algorithm is able to recognize general context-free grammars in $O(n^3)$, where $n$ is the size of the string to be recognized. However, there are times in which we want more than just a yes or no answer. There are times in which we want an actual parse tree, and for ambiguous grammars, there are times in which we want all possible parse trees. Fortunately, there is a paper by Dr. Elizabeth Scott, \cite{scott}, that presents a technique to produce a data structure known as a Shared Packed Parse Forest(SPPF), able to represent even an infinite number of parse trees. Unfortunately this paper is poorly written, making it very difficult to understand. Our paper is a re-explanation of Scott's techniques. It is agreed by many that Earley's Algorithm is also difficult to understand. Fortunately, there exists a data structure due to Dr. Gianfranco Bilardi and Dr. Keshav Pingali, \cite{bilardi-pingali}, known as Grammar Flow Graphs(GFGs) that significantly ease the understanding of the algorithm by reformulating parsing problems as path problems in a graph. Our technique will use GFGs.
+Earley's Algorithm is able to recognize general context-free grammars in $O(n^3)$, where $n$ is the size of the string to be recognized. However, there are times in which we want more than just a yes or no answer. There are times in which we want an actual parse tree, and for ambiguous grammars, there are times in which we want all possible parse trees. Fortunately, there is a paper by Dr. Elizabeth Scott, \cite{scott}, that presents a technique to produce a data structure known as a Shared Packed Parse Forest (SPPF), able to represent even an infinite number of parse trees. Unfortunately this paper is poorly written, making it very difficult to understand. Our paper is a re-explanation of Scott's techniques. It is agreed by many that Earley's Algorithm is also difficult to understand. Fortunately, there exists a data structure due to Dr. Gianfranco Bilardi and Dr. Keshav Pingali, \cite{bilardi-pingali}, known as Grammar Flow Graphs (GFGs) that significantly ease the understanding of the algorithm by reformulating parsing problems as path problems in a graph. Our technique will use GFGs.
 \end{abstract}
 
 \category{F.7.2}{Semantics and Reasoning}{Program Reasoning--Parsing}
@@ -83,182 +83,18 @@ Context-Free Languages, Cubic Generalized Parsing, Earley Parsing
 Earley Sets, Grammar Flow Graphs, Non-Deterministic Finite Automaton, Shared Packed Parse Forest
 
 \section{Introduction}
-
-The text of the paper begins here.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
+It is important here for us to distinguish between recognisers and parsers for a grammar. Recognizers determine whether or not a string is part of a language defined by a grammar whereas parsers construct parse trees that reveal \textit{how} a string satisfies the syntax dictated by a grammar. For about the past five decades, there already exist general recognizers like Cocke-Younger-Kasami (CYK) and Earley's Algorithms that run cubic relative to the size of the string to be recognized. Alternatively, Generalized LR (GLR) is an algorithm that produces parsers but has the very undesirable property that it is unbounded. Dr. Elizabeth Scott extended the Earley Recogniser into a parser that is able run in cubic space and time, \cite{scott}. The challenge was to successfully apply the parser to ambiguous grammars that produces multiple, perhaps infinite, parse trees for a string in the grammar. Note that simply disallowing ambiguous grammars is not a solution since there exists grammars that are intrinsically ambiguous. The solution she used used was a representation known as a Shared Packed Parse Forest (SPPF), which is essence is a Directed Acyclic Graph (DAG).
+
+Earley's Algorithm is a highly complex algorithm. To dramatically simplify its understanding, we view it from the perspective of Grammar Flow Graphs (GFGs) that restructure parsing as finding certain paths within the graph, \cite{bilardi-pingali}. For those of you familiar with automoata theory, GFGs play the same role for context-free grammars as finite-state automota play for regular grammars. The rest of the paper is organized as follows:
+\begin{itemize}
+\item Section 2 will introduce GFGs
+\item Section 3 will introduce Earley's Algorithm using GFGs
+\item Section 4 will introduce SPPFs
+\item Section 5 will introduce Dr. Scott's Algorithm for producing SPPFs
+\item Section 6 will discuss our implementation
+\item Section 7 will discuss our results
+\item Section 8 will conclude
+\end{itemize}
 \appendix
 \section{Appendix Title}
 

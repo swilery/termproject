@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  1 DEC 2016 21:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  2 DEC 2016 11:57
 entering extended mode
 **./termPaper.tex
 (termPaper.tex
@@ -150,39 +150,37 @@ Overfull \hbox (2.29544pt too wide) in paragraph at lines 83--84
 on-Deterministic
  []
 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [1{C:/Users/Swilery/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 90.
+[1{C:/Users/Swilery/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
 Non-PDF special ignored!
 
-] [2
-
 ] (termPaper.aux) ) 
 Here is how much of TeX's memory you used:
- 1431 strings out of 493634
- 16446 string characters out of 3141309
- 81247 words of memory out of 3000000
- 4846 multiletter control sequences out of 15000+200000
- 25290 words of font info for 48 fonts, out of 3000000 for 9000
+ 1435 strings out of 493634
+ 16492 string characters out of 3141309
+ 82247 words of memory out of 3000000
+ 4849 multiletter control sequences out of 15000+200000
+ 25546 words of font info for 49 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 30i,9n,30p,1138b,212s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 30i,9n,30p,1209b,212s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/
 8r.enc}<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi9.
 pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/
 Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Pro
 gram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Progra
-m Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 
-2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
-ype1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/ti
-mes/utmri8a.pfb>
-Output written on termPaper.pdf (2 pages, 105138 bytes).
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program F
+iles (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/
+MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9
+/fonts/type1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type
+1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times
+/utmri8a.pfb>
+Output written on termPaper.pdf (1 page, 113969 bytes).
 PDF statistics:
- 50 PDF objects out of 1000 (max. 8388607)
+ 51 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
