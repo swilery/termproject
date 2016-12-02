@@ -69,7 +69,7 @@
 \maketitle
 
 \begin{abstract}
-This is the text of the abstract.
+Earley's Algorithm is able to recognize general context-free grammars in $O(n^3)$, where $n$ is the size of the string to be recognized. However, there are times in which we want more than just a yes or no answer. There are times in which we want an actual parse tree, and for ambiguous grammars, there are times in which we want all possible parse trees. Fortunately, there is a paper by Dr. Elizabeth Scott, \cite{scott}, that presents a technique to produce a data structure known as a Shared Packed Parse Forest(SPPF), able to represent even an infinite number of parse trees. Unfortunately this paper is poorly written, making it very difficult to understand. Our paper is a re-explanation of Scott's techniques. It is agreed by many that Earley's Algorithm is also difficult to understand. Fortunately, there exists a data structure due to Dr. Gianfranco Bilardi and Dr. Keshav Pingali, \cite{bilardi-pingali}, known as Grammar Flow Graphs(GFGs) that significantly ease the understanding of the algorithm by reformulating parsing problems as path problems in a graph. Our technique will use GFGs.
 \end{abstract}
 
 \category{F.7.2}{Semantics and Reasoning}{Program Reasoning--Parsing}
