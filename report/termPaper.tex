@@ -134,35 +134,35 @@ Now we are in a position to introduce the GFG.
 \end{itemize}
 \begin{figure}
 \begin{center}
-\begin{tikzpicture}[->,>=stealth,node distance = 1.0cm,thick]
+\begin{tikzpicture}[->,>=stealth,node distance = 1.5cm,thick]
 \tikzstyle{v}=[rectangle,minimum size=1mm,draw,thick]
-\node[v]	(dotS)  					   		{$\bullet{S}$};
-\node[v] 	(dotN)  	[below = of dotS]		{$\bullet{N}$};
-\node[v] 	(dottt)  	[below = of dotN]		{$N\longrightarrow{\bullet{tt}}$};
-\node[v] 	(tdott)  	[below = of dottt]		{$N\longrightarrow{t\bullet{t}}$};
-\node[v] 	(ttdot)  	[below = of tdott]		{$N\longrightarrow{tt\bullet}$};
-\node[v] 	(Ndot)  	[below = of ttdot]		{$N\bullet$};
-\node[v] 	(Sdot)  	[below = of Ndot]		{$S\bullet$};
-\node[v] 	(dotNt)		[left = of dotN]		{$S\longrightarrow{\bullet{Nt}}$};
-\node[v] 	(Ndott)  	[below = of dotNt]		{$S\longrightarrow{N\bullet{t}}$};
-\node[v] 	(Ntdot)  	[below = of Ndott]		{$S\longrightarrow{Nt\bullet}$};
-\node[v] 	(dottN)  	[right = of dotN]		{$S\longrightarrow{\bullet{tN}}$};
+\node[v, label=start]	(dotS)  					   		{$\bullet{S}$};
+\node[v, label=start] 	(dotN)  	[below = of dotS]		{$\bullet{N}$};
+\node[v, label=entry/scan] 	(dottt)  	[below = of dotN]		{$N\longrightarrow{\bullet{tt}}$};
+\node[v, label=scan] 	(tdott)  	[below = of dottt]		{$N\longrightarrow{t\bullet{t}}$};
+\node[v, label={[below = 0.5cm]:exit}] 	(ttdot)  	[below = of tdott]		{$N\longrightarrow{tt\bullet}$};
+\node[v, label={[below = 0.5cm]:end}] 	(Ndot)  	[below = of ttdot]		{$N\bullet$};
+\node[v, label={[below = 0.5cm]:end}] 	(Sdot)  	[below = of Ndot]		{$S\bullet$};
+\node[v, label=call/entry] 	(dotNt)		[left = of dotN]		{$S\longrightarrow{\bullet{Nt}}$};
+\node[v, label=return/scan] 	(Ndott)  	[below = of dotNt]		{$S\longrightarrow{N\bullet{t}}$};
+\node[v, label={[below = 0.5cm]:exit}] 	(Ntdot)  	[below = of Ndott]		{$S\longrightarrow{Nt\bullet}$};
+\node[v, label=call/entry/scan] 	(dottN)  	[right = of dotN]		{$S\longrightarrow{\bullet{tN}}$};
 \node[v] 	(tdotN)  	[below = of dottN]		{$S\longrightarrow{t\bullet{N}}$};
-\node[v] 	(tNdot)  	[below = of tdotN]		{$S\longrightarrow{tN\bullet}$};
-\path(dotS)		edge	node			{}		(dotNt)
-	 (dotS)		edge	node			{}		(dottN)
-	 (dotNt)	edge	node			{}		(dotN)
-	 (dottN)	edge	node			{}		(dotN)
-	 (dotN)		edge	node			{}		(dottt)
-	 (dottt)	edge	node[left]		{$t$}	(tdott)
-	 (tdott)	edge	node[left]		{$t$}	(ttdot)
-	 (ttdot)	edge	node			{}		(Ndot)
-	 (Ndot)		edge	node			{}		(Ndott)
-	 (Ndot)		edge	node			{}		(tNdot)
-	 (Ndott)	edge	node[left]		{$t$}	(Ntdot)
-	 (dottN)	edge	node[left]		{$t$}	(tdotN)
-	 (Ntdot)	edge	node			{}		(Sdot)
-	 (tNdot)	edge	node			{}		(Sdot);
+\node[v, label=exit/return] 	(tNdot)  	[below = of tdotN]		{$S\longrightarrow{tN\bullet}$};
+\path(dotS)		edge	node			{entry}		(dotNt)
+	 (dotS)		edge	node			{entry}		(dottN)
+	 (dotNt)	edge	node[below]			{call}		(dotN)
+	 (dottN)	edge	node[below]			{call}		(dotN)
+	 (dotN)		edge	node			{entry}		(dottt)
+	 (dottt)	edge	node		{scan: $t$}	(tdott)
+	 (tdott)	edge	node		{scan: $t$}	(ttdot)
+	 (ttdot)	edge	node			{exit}		(Ndot)
+	 (Ndot)		edge	node			{return}		(Ndott)
+	 (Ndot)		edge	node			{return}		(tNdot)
+	 (Ndott)	edge	node		{scan: $t$}	(Ntdot)
+	 (dottN)	edge	node		{scan: $t$}	(tdotN)
+	 (Ntdot)	edge	node			{exit}		(Sdot)
+	 (tNdot)	edge	node			{exit}		(Sdot);
 \end{tikzpicture}
 \caption{Example of a GFG for the preceding grammar.} \label{fig:M1}
 \end{center}	
@@ -173,8 +173,7 @@ Now we are in a position to introduce the GFG.
 This is the text of the appendix, if you need one.
 
 \acks
-
-Acknowledgments, if needed.
+We would like to thank Dr. Keshav Pingali for his guidance on this project. We would also like to thank Sepideh Maleki for helping us understand Scott's algorithm.
 
 % We recommend abbrvnat bibliography style.
 
