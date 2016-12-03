@@ -30,7 +30,10 @@
 % authoryear    To obtain author/year citation style instead of numeric.
 
 \usepackage{amsmath}
-
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{positioning}
+\tikzstyle{vertex}=[circle, draw, inner sep=0pt, minimum size=6pt]
 
 \begin{document}
 
@@ -100,36 +103,70 @@ Earley's Algorithm is a highly complex algorithm. To dramatically simplify its u
 
 Let us begin with the standard definition of a context-free grammar.
 
-\textit{Definition:} A \textit{context-free grammar}, $CFG$, is a tuple $(N, T, P, S)$, where, \cite{bilardi-pingali}:
+\textit{Definition:} A \textit{context-free grammar}, \textit{CFG}, is a tuple $(N, T, P, S)$, where, \cite{bilardi-pingali}:
 \begin{itemize}
 \item[$\triangleright$] $N$ is a finite set of elements called \textit{nonterminals}, 
 \item[$\triangleright$] $T$ is a finite set of elements called \textit{terminals}, 
-\item[$\triangleright$] $P \subseteq N \times (N \cup T)^*$ is the set of \textit{productions} that map nonterminals to a sequence of nonterminals or terminals, and 
-\item[$\triangleright$] $S \in N$ is the unique \textit{start symbol} that appears once on the left-hand side of a single production.
+\item[$\triangleright$] $P\subseteq{N\times{(N\cup{T}}})^*$ is the set of \textit{productions} that map nonterminals to a sequence of nonterminals or terminals, and 
+\item[$\triangleright$] $S\in{N}$ is the unique \textit{start symbol} that appears once on the left-hand side of a single production.
 \end{itemize}
 
 An example of a grammar is the following, where $|$ signifies or:
 \begin{align*}
-S &\longrightarrow N \: t \: | \: t \: N \\
-N &\longrightarrow t \: t
+S&\longrightarrow{N \: t \: | \: t \: N} \\
+N&\longrightarrow{t \: t}
 \end{align*}
 
-Now we are in a position to introduce the $GFG$.
+Now we are in a position to introduce the GFG.
 
-\textit{Definition:} Let $CFG = (N, T, P, S)$ be a context-free grammar and let $\epsilon$ denote the empty string. The \textit{grammar flow graph ($GFG$)} of $CFG$, $GFG(CFG) = (V(CGF), G(CFG))$, is the smalled directed graph that has the following properties, \cite{bilardi-pingali}:
+\textit{Definition:} Let $CFG = (N, T, P, S)$ be a context-free grammar and let $\epsilon$ denote the empty string. The \textit{grammar flow graph (GFG)} of $CFG$, $GFG(CFG) = (V(CGF), G(CFG))$, is the smalled directed graph that has the following properties, \cite{bilardi-pingali}:
 \begin{itemize}
-\item[$\triangleright$] For each nonterminal $M \in N$, there exist $\bullet{M},M\bullet \in V(CFG)$ called \textit{start nodes} and \textit{end nodes} respectively,
-\item[$\triangleright$] For each production $(M\longrightarrow\epsilon) \in P$, there exists $(M\longrightarrow\bullet) \in V(CFG)$ and $(\bullet{M}, M\longrightarrow\bullet),(M\longrightarrow\bullet, M\bullet) \in E(CFG)$
+\item[$\triangleright$] For each nonterminal $M\in{N}$, there exist $(\bullet{M})$,$(M\bullet){\in{V(CFG)}}$ called \textit{start nodes} and \textit{end nodes} respectively,
+\item[$\triangleright$] For each production $(M\longrightarrow{\epsilon})\in{P}$, there exists $(M\longrightarrow{\bullet})\in{V(CFG)}$ and $(\bullet{M}, M\longrightarrow{\bullet}),(M\longrightarrow{\bullet}, M\bullet)\in{E(CFG)}$,
 \item[$\triangleright$] For each production $(M\longrightarrow{q_1q_2\dots{q_r}})$ where $q_i \neq \epsilon$:
 \begin{itemize}
-\item[$\diamond$] $(M\longrightarrow\bullet{q_1q_2\dots{q_r}}), (M\longrightarrow{q_1\bullet{q_2...q_r}}), \dots, (M\longrightarrow{q_1q_2...q_r\bullet}) \in V(CFG)$, where the first node is called an \textit{entry node} and the last node is called an \textit{exit node},
-\item[$\diamond$] $(\bullet{M}, M\longrightarrow\bullet{q_1q_2\dots{q_r}}), (M\longrightarrow{q_1q_2\dots{q_r\bullet}}, M\bullet) \in E(CFG)$ called \textit{entry edges} and \textit{exit edges} respectively,
-\item[$\diamond$] For each $t \in T$, $(M\longrightarrow\dots\bullet{t\dots}, M\longrightarrow\dots{t\bullet\dots}) \in E(CFG)$ called \textit{scan edges} labeled $t$, where $(M\longrightarrow\dots\bullet{t\dots})$ is called a \textit{scan node}, and
-\item[$\diamond$] For each $K \in N$, $(M\longrightarrow\dots\bullet{K\dots}, \bullet{K})$, $(K\bullet, M\longrightarrow\dots{K\bullet\dots},)$ called \textit{call edges} and \textit{return edges} respectively, where $(M\longrightarrow\dots\bullet{K\dots})$ is called a \textit{call node} that is matched with the \textit{return node} $(M\longrightarrow\dots{K\bullet\dots})$, and
+\item[$\diamond$] $(M\longrightarrow{\bullet{q_1q_2\dots{q_r}}}), (M\longrightarrow{q_1\bullet{q_2\dots{q_r}}}), \dots, (M\longrightarrow{q_1q_2...q_r\bullet})\in{V(CFG)}$, where the first node is called an \textit{entry node} and the last node is called an \textit{exit node},
+\item[$\diamond$] $(\bullet{M}, M\longrightarrow{\bullet{q_1q_2\dots{q_r}}}), (M\longrightarrow{q_1q_2\dots{q_r\bullet}}, M\bullet)\in{E(CFG)}$ called \textit{entry edges} and \textit{exit edges} respectively,
+\item[$\diamond$] For each $t\in{T}$, $(M\longrightarrow{\dots{\bullet{t\dots}}}, M\longrightarrow{\dots{t\bullet{\dots}}})\in{E(CFG)}$ called \textit{scan edges} labeled $t$, where $(M\longrightarrow{\dots{\bullet{t\dots}}})$ is called a \textit{scan node}, and
+\item[$\diamond$] For each $K\in{N}$, $(M\longrightarrow{\dots{\bullet{K\dots}}}, \bullet{K})$, $(K\bullet, M\longrightarrow{\dots{K\bullet{\dots}}})$ called \textit{call edges} and \textit{return edges} respectively, where $(M\longrightarrow{\dots{\bullet{K\dots}}})$ is called a \textit{call node} that is matched with the \textit{return node} $(M\longrightarrow{\dots{K\bullet{\dots}}})$, and
 \end{itemize}
 \item[$\triangleright$] Edges not scan edges are labeled $\epsilon$.
 \end{itemize}
-
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,node distance = 1.0cm,thick]
+\tikzstyle{v}=[rectangle,minimum size=1mm,draw,thick]
+\node[v]	(dotS)  					   		{$\bullet{S}$};
+\node[v] 	(dotN)  	[below = of dotS]		{$\bullet{N}$};
+\node[v] 	(dottt)  	[below = of dotN]		{$N\longrightarrow{\bullet{tt}}$};
+\node[v] 	(tdott)  	[below = of dottt]		{$N\longrightarrow{t\bullet{t}}$};
+\node[v] 	(ttdot)  	[below = of tdott]		{$N\longrightarrow{tt\bullet}$};
+\node[v] 	(Ndot)  	[below = of ttdot]		{$N\bullet$};
+\node[v] 	(Sdot)  	[below = of Ndot]		{$S\bullet$};
+\node[v] 	(dotNt)		[left = of dotN]		{$S\longrightarrow{\bullet{Nt}}$};
+\node[v] 	(Ndott)  	[below = of dotNt]		{$S\longrightarrow{N\bullet{t}}$};
+\node[v] 	(Ntdot)  	[below = of Ndott]		{$S\longrightarrow{Nt\bullet}$};
+\node[v] 	(dottN)  	[right = of dotN]		{$S\longrightarrow{\bullet{tN}}$};
+\node[v] 	(tdotN)  	[below = of dottN]		{$S\longrightarrow{t\bullet{N}}$};
+\node[v] 	(tNdot)  	[below = of tdotN]		{$S\longrightarrow{tN\bullet}$};
+\path(dotS)		edge	node			{}		(dotNt)
+	 (dotS)		edge	node			{}		(dottN)
+	 (dotNt)	edge	node			{}		(dotN)
+	 (dottN)	edge	node			{}		(dotN)
+	 (dotN)		edge	node			{}		(dottt)
+	 (dottt)	edge	node[left]		{$t$}	(tdott)
+	 (tdott)	edge	node[left]		{$t$}	(ttdot)
+	 (ttdot)	edge	node			{}		(Ndot)
+	 (Ndot)		edge	node			{}		(Ndott)
+	 (Ndot)		edge	node			{}		(tNdot)
+	 (Ndott)	edge	node[left]		{$t$}	(Ntdot)
+	 (dottN)	edge	node[left]		{$t$}	(tdotN)
+	 (Ntdot)	edge	node			{}		(Sdot)
+	 (tNdot)	edge	node			{}		(Sdot);
+\end{tikzpicture}
+\caption{Example of a GFG for the preceding grammar.} \label{fig:M1}
+\end{center}	
+\end{figure}
 \appendix
 \section{Appendix Title}
 
