@@ -87,7 +87,7 @@ Context-Free Languages, Cubic Generalized Parsing, Earley Parsing
 Earley Sets, Grammar Flow Graphs, Non-Deterministic Finite Automaton, Shared Packed Parse Forest
 
 \section{Introduction}
-It is important here for us to distinguish between recognisers and parsers for a grammar. Recognizers determine whether or not a string is part of a language defined by a grammar whereas parsers construct parse trees that reveal \textit{how} a string satisfies the syntax dictated by a grammar. For about the past five decades, there already exist general recognizers like Cocke-Younger-Kasami (CYK) and Earley's Algorithms that run cubic relative to the size of the string to be recognized. Alternatively, Generalized LR (GLR) is an algorithm that produces parsers but has the very undesirable property that it is unbounded. Dr. Elizabeth Scott extended the Earley Recogniser into a parser that is able run in cubic space and time, \cite{scott}. The challenge was to successfully apply the parser to ambiguous grammars that produces multiple, perhaps infinite, parse trees for a string in the grammar. Note that simply disallowing ambiguous grammars is not a solution since there exists grammars that are intrinsically ambiguous. The solution she used used was a representation known as a Shared Packed Parse Forest (SPPF), which is in essence a Directed Acyclic Graph (DAG).
+It is important here for us to distinguish between recognisers and parsers for a grammar. Recognizers determine whether or not a string is part of a language defined by a grammar whereas parsers construct parse trees that reveal \textit{how} a string satisfies the syntax dictated by a grammar. For about the past five decades, there already exist general recognizers like Cocke-Younger-Kasami (CYK) and Earley's Algorithms that run cubic relative to the size of the string to be recognized. Alternatively, Generalized LR (GLR) is an algorithm that produces parsers but has the very undesirable property that it is unbounded. Dr. Elizabeth Scott extended the Earley Recogniser into a parser that is able run in cubic space and time, \cite{scott}. The challenge was to successfully apply the parser to ambiguous grammars that produces multiple, perhaps infinite, parse trees for a string in the grammar. Note that simply disallowing ambiguous grammars is not a solution since there exists grammars that are intrinsically ambiguous. The solution she used was a representation known as a Shared Packed Parse Forest (SPPF), which is in essence a Directed Acyclic Graph (DAG).
 
 Earley's Algorithm is a highly complex algorithm. To dramatically simplify its understanding, we view it from the perspective of Grammar Flow Graphs (GFGs) that restructure parsing as finding certain paths within the graph, \cite{bilardi-pingali}. For those of you familiar with automata theory, GFGs play the same role for context-free grammars as finite-state automota play for regular grammars. The rest of the paper is organized as follows:
 \begin{itemize}
@@ -101,7 +101,6 @@ Earley's Algorithm is a highly complex algorithm. To dramatically simplify its u
 \end{itemize}
 
 \section{Grammar Flow Graphs}
-
 Let us begin with the standard definition of a context-free grammar.
 
 \textit{Definition:} A \textit{context-free grammar}, \textit{CFG}, is a tuple $(N, T, P, S)$, where, \cite{bilardi-pingali}:
@@ -171,15 +170,25 @@ Now we are in a position to introduce the GFG.
 
 Figure \ref{fig:M1} depicts the GFG associated with the preceding grammar. The following definition comes naturally.
 
-Definition: A path in a GFG \textit{generates} the word $w$ by concatenating the labels along its sequence of edges.
+\textit{Definition}: A path in a GFG \textit{generates} the word $w$ by concatenating the labels along its sequence of edges.
 
 Those famaliar with automata theory may recognize that a GFG resembles a non-deterministic finite-state automaton (NFA) which starts at $\bullet{S}$ and accepts at $S\bullet$. The idea is that each path from $\bullet{S}$ to $S\bullet$ generates a word recognized by the automaton. However, in general, this is not the case. To see this, consider the path $P = (\bullet{S}, S\longrightarrow{\bullet{tN}}, S\longrightarrow{t\bullet{N}}, \bullet{N}, N\longrightarrow{\bullet{tt}}, N\longrightarrow{t\bullet{t}}, N\longrightarrow{tt\bullet}, N\bullet, S\longrightarrow{N\bullet{t}}, S\longrightarrow{Nt\bullet}, S\bullet)$ in Figure \ref{fig:M1}. $P$ generates the word "tttt" which is not part of the original grammar. To maintain correctness, we must restrict the valid paths the automaton can take. In the case of $P$, the automaton must realize that after traversing the edge $(S\longrightarrow{t\bullet{N}}, \bullet{N})$ it must traverse $(N\bullet, S\longrightarrow{tN\bullet})$ instead of $(N\bullet, S\longrightarrow{N\bullet{t}})$. In general, the automaton can choose an arbitrary outgoing edge at a start node but at an end node, it must choose the return edge corresponding to the call edge it took. This behavior can be represented by a stack, by which when the automaton encounters a call node, it pushes the corresponding return node on the stack. Subsequently at an end node, the automaton pops the stack. In the case of $P$, $(S\longrightarrow{tN\bullet})$ gets pushed on the stack at $(S\longrightarrow{t\bullet{N}}$) and it gets popped at $N\bullet$. Dr. Bilardi and Pingali called this automaton a non-deterministic GFG automaton (NGA). We have the following definition.
 
-Definition: The valid paths a NGA could follow from $\bullet{S}$ to $S\bullet$ are called \textit{complete balanced paths (CBPs)}.
+\textit{Definition}: The valid paths a NGA could follow from $\bullet{S}$ to $S\bullet$ are called \textit{complete balanced paths (CBPs)}.
 
 \textit{Theorem 1}: Let $CFG = (N, T, P, S)$ and let $w\in{T^*}$. $w$ is part of the language produced by $CFG$ iff a CBP of GFG(CFG) generates $w$.
 
 \textit{Proof}: Please see \cite{bilardi-pingali}.
+
+\section{Earley's Algorithm}
+Even though Earley's Algorithm is difficult to understand in the standard context, from the prospective of GFGs, it is just an algorithm that simulates the NGA. For an input string $w$, the algorithm generates a sequence of Earley sets, $\Sigma_0, \Sigma_1, \dots, \Sigma_|w|$, in which each set is a set of nodes from the GFG. Each set $\Sigma_i$ is the $\epsilon$-closure of $\Sigma_{i-1}$, that is each node in $\Sigma_i$ is reachable from a node in $\Sigma_{i-1}$ by traversing edges labeled $\epsilon$ in the GFG after traversing a scan edge labeled with the character at position $i$ in string $w$. As its definition, $\Sigma_0$ contains $(\bullet{S})$ and no characters from the string $w$. Intuitively, you can imagine that the characters in $w$ start their numbering at position $1$. 
+
+Recall that at an end node, the NGA should take the return edge corresponding to the call edge it took. This can be handled by associating a tag with each node in the Earley sets. At a high level, these tags differentiate the times at which the start nodes are reached and they propogate this information to the corresponding end nodes. At the end nodes, the tags are consulted to find the appropriate return edge. Thus when a call edge in traversed from a call node to a start node, the start node gets tagged with the number of the Earley Set to which the call and start nodes are added. At an end node, the tag identifies the Earley Set in which the call node resides after which the corresponding return node can be easily identified and tagged with the tag of its call node. All other edges simply copy these tags. We thus have the following theorem.
+
+\textit{Thereom 2}: Let $CFG=(N, T, P, S)$ and let $w$ be an input string. $(S\bullet, 0)\in{\Sigma_|w|}$ iff $w$ is part of the language produced by $CFG$.
+
+\textit{Proof}: Please see \cite{bilardi-pingali}.
+
 \appendix
 \section{Appendix Title}
 
