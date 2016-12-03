@@ -31,6 +31,7 @@
 
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{bm}
 \usepackage{tikz}
 \usetikzlibrary{decorations.markings}
 \usetikzlibrary{positioning}
@@ -180,14 +181,58 @@ Those famaliar with automata theory may recognize that a GFG resembles a non-det
 
 \textit{Proof}: Please see \cite{bilardi-pingali}.
 
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,node distance = 1.5cm,thick]
+\tikzstyle{v}=[rectangle,minimum size=1mm,draw,thick]
+\node[v, label=left:$\Sigma_0:\bullet{ttt}$]	(S0)  					   		{\begin{tabular}{l}
+  $(\bullet{S}, 0)$\\
+  \bm{$(S\longrightarrow{\bullet{Nt}}, 0)$}\\
+  $(S\longrightarrow{\bullet{tN}}, 0)$\\
+  $(\bullet{N}, 0)$\\
+  $(N\longrightarrow{\bullet{tt}}, 0)$\\
+ \end{tabular}};
+\node[v, label=left:$\Sigma_1:t\bullet{tt}$]	(S1)	[below = of S0]			   		{\begin{tabular}{l}
+  $(N\longrightarrow{t\bullet{t}}, 0)$\\
+  \bm{$(S\longrightarrow{t\bullet{N}}, 0)$}\\
+  $(\bullet{N}, 1)$\\
+  $(N\longrightarrow{\bullet{tt}}, 1)$\\
+ \end{tabular}};
+\node[v, label=left:$\Sigma_2:tt\bullet{t}$]	(S2)	[below = of S1]			   		{\begin{tabular}{l}
+  $(N\longrightarrow{tt\bullet}, 0)$\\
+  $(N\bullet, 0)$\\
+  $(S\longrightarrow{N\bullet{t}}, 0)$\\
+  $(N\longrightarrow{t\bullet{t}}, 1)$\\
+ \end{tabular}};
+\node[v, label=left:$\Sigma_3:ttt\bullet$]	(S3)	[below = of S2]			   		{\begin{tabular}{l}
+  $(S\longrightarrow{Nt\bullet}, 0)$\\
+  $(S\bullet, 0)$\\
+  $(N\longrightarrow{tt\bullet}, 1)$\\
+  $(N\bullet, 1)$\\
+  $(S\longrightarrow{tN\bullet}, 0)$\\
+ \end{tabular}};
+\path(S0)		edge	node[right]			{$t$}		(S1)
+	 (S1)		edge	node[right]			{$t$}		(S2)
+	 (S2)		edge	node[right]			{$t$}		(S3);
+\end{tikzpicture}
+\caption{Example of Earley Sets for the preceding grammar on string "ttt". Call nodes are in bold.} \label{fig:M2}
+\end{center}	
+\end{figure}
+
 \section{Earley's Algorithm}
-Even though Earley's Algorithm is difficult to understand in the standard context, from the prospective of GFGs, it is just an algorithm that simulates the NGA. For an input string $w$, the algorithm generates a sequence of Earley sets, $\Sigma_0, \Sigma_1, \dots, \Sigma_|w|$, in which each set is a set of nodes from the GFG. Each set $\Sigma_i$ is the $\epsilon$-closure of $\Sigma_{i-1}$, that is each node in $\Sigma_i$ is reachable from a node in $\Sigma_{i-1}$ by traversing edges labeled $\epsilon$ in the GFG after traversing a scan edge labeled with the character at position $i$ in string $w$. As its definition, $\Sigma_0$ contains $(\bullet{S})$ and no characters from the string $w$. Intuitively, you can imagine that the characters in $w$ start their numbering at position $1$. 
+Even though Earley's Algorithm is difficult to understand in the standard context, from the prospective of GFGs, it is just an algorithm that simulates the NGA. For an input string $w$, the algorithm generates a sequence of Earley sets, $\Sigma_0, \Sigma_1, \dots, \Sigma_{|w|}$, in which each set is a set of nodes from the GFG. Each set $\Sigma_i$ is the $\epsilon$-closure of $\Sigma_{i-1}$, that is each node in $\Sigma_i$ is reachable from a node in $\Sigma_{i-1}$ by traversing edges labeled $\epsilon$ in the GFG after traversing a scan edge labeled with the character at position $i$ in string $w$. As its definition, $\Sigma_0$ contains $(\bullet{S})$ and no characters from the string $w$. Intuitively, you can imagine that the characters in $w$ start their numbering at position $1$. 
 
-Recall that at an end node, the NGA should take the return edge corresponding to the call edge it took. This can be handled by associating a tag with each node in the Earley sets. At a high level, these tags differentiate the times at which the start nodes are reached and they propogate this information to the corresponding end nodes. At the end nodes, the tags are consulted to find the appropriate return edge. Thus when a call edge in traversed from a call node to a start node, the start node gets tagged with the number of the Earley Set to which the call and start nodes are added. At an end node, the tag identifies the Earley Set in which the call node resides after which the corresponding return node can be easily identified and tagged with the tag of its call node. All other edges simply copy these tags. We thus have the following theorem.
+Recall that at an end node, the NGA should take the return edge corresponding to the call edge it took. This can be handled by associating a tag with each node in the Earley sets. At a high level, these tags differentiate the times at which the start nodes are reached and they propogate this information to the corresponding end nodes. At the end nodes, the tags are consulted to find the appropriate return edge. Thus when a call edge is traversed from a call node to a start node, the start node gets tagged with the number of the Earley Set to which the call and start nodes are added. At an end node, the tag identifies the Earley Set in which the call node resides after which the corresponding return node can be easily identified and tagged with the tag of its call node. All other edges simply copy these tags. We thus have the following theorem.
 
-\textit{Thereom 2}: Let $CFG=(N, T, P, S)$ and let $w$ be an input string. $(S\bullet, 0)\in{\Sigma_|w|}$ iff $w$ is part of the language produced by $CFG$.
+\textit{Thereom 2}: Let $CFG=(N, T, P, S)$ and let $w$ be an input string. $(S\bullet, 0)\in{\Sigma_{|w|}}$ iff $w$ is part of the language produced by $CFG$.
 
 \textit{Proof}: Please see \cite{bilardi-pingali}.
+
+Figure \ref{fig:M2} displays the Earley Sets on the input string "ttt" giving by the following grammar whose GFG is provided in Figure \ref{fig:M1}.
+\begin{align*}
+S&\longrightarrow{N \: t \: | \: t \: N} \\
+N&\longrightarrow{t \: t}
+\end{align*}
 
 \appendix
 \section{Appendix Title}

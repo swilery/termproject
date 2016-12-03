@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  3 DEC 2016 13:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  3 DEC 2016 15:49
 entering extended mode
 **./termPaper.tex
 (termPaper.tex
@@ -116,6 +116,14 @@ Package: amsthm 2015/03/04 v2.20.2
 \thm@postskip=\skip55
 \thm@headsep=\skip56
 \dth@everypar=\toks26
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\bm.sty"
+Package: bm 2014/10/28 v1.1c Bold Symbol Support (DPC/FMi)
+\symboldoperators=\mathgroup4
+\symboldletters=\mathgroup5
+\symboldsymbols=\mathgroup6
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 141.
+LaTeX Info: Redefining \bm on input line 207.
 )
 (C:\Users\Swilery\AppData\Roaming\MiKTeX\2.9\tex\latex\pgf\frontendlayer\tikz.s
 ty
@@ -487,19 +495,19 @@ File: tikzlibrarypositioning.code.tex 2008/10/06 v3.0.1a (rcs-revision 1.7)
 ) (termPaper.aux)
 \openout1 = `termPaper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
-LaTeX Font Info:    ... okay on input line 39.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 39.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 40.
+LaTeX Font Info:    ... okay on input line 40.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 40.
 
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
@@ -520,42 +528,42 @@ ABD: EveryShipout initializing macros
 \everyMPtoPDFconversion=\toks41
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <18> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 73.
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 73.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 74.
  ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\omsptm.fd"
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <7> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 74.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 75.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 76.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 80.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 81.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 80.
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 81.
 
-Underfull \hbox (badness 2478) in paragraph at lines 84--85
+Underfull \hbox (badness 2478) in paragraph at lines 85--86
  \OT1/ptm/b/it/9 Gen-eral Terms \OT1/ptm/m/n/9 Context-Free Lan-guages, Cu-bic 
 Gen-er-al-ized
  []
 
 
-Overfull \hbox (2.29544pt too wide) in paragraph at lines 87--88
+Overfull \hbox (2.29544pt too wide) in paragraph at lines 88--89
  \OT1/ptm/b/it/9 Key-words \OT1/ptm/m/n/9 Ear-ley Sets, Gram-mar Flow Graphs, N
 on-Deterministic
  []
 
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 94.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 95.
 
-Overfull \hbox (5.62836pt too wide) in paragraph at lines 106--107
+Overfull \hbox (5.62836pt too wide) in paragraph at lines 107--108
 []\OT1/ptm/m/it/9 Definition: \OT1/ptm/m/n/9 A \OT1/ptm/m/it/9 context-free gra
 m-mar\OT1/ptm/m/n/9 , \OT1/ptm/m/it/9 CFG\OT1/ptm/m/n/9 , is a tu-ple $\OT1/cmr
 /m/n/9 (\OML/cmm/m/it/9 N; T; P; S\OT1/cmr/m/n/9 )$\OT1/ptm/m/n/9 ,
  []
 
 
-Overfull \hbox (13.05965pt too wide) in paragraph at lines 124--125
+Overfull \hbox (13.05965pt too wide) in paragraph at lines 125--126
 []\OT1/ptm/m/n/9 For each non-ter-mi-nal $\OML/cmm/m/it/9 M \OMS/cmsy/m/n/9 2 \
 OML/cmm/m/it/9 N$\OT1/ptm/m/n/9 , there ex-ist $\OT1/cmr/m/n/9 (\OMS/cmsy/m/n/9
  \OML/cmm/m/it/9 M\OT1/cmr/m/n/9 )$\OT1/ptm/m/n/9 ,$\OT1/cmr/m/n/9 (\OML/cmm/m
@@ -568,7 +576,7 @@ OML/cmm/m/it/9 N$\OT1/ptm/m/n/9 , there ex-ist $\OT1/cmr/m/n/9 (\OMS/cmsy/m/n/9
 Non-PDF special ignored!
 
 ]
-Overfull \hbox (6.85466pt too wide) in paragraph at lines 128--129
+Overfull \hbox (6.85466pt too wide) in paragraph at lines 129--130
 []$\OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cmsy/m/n/9 ! []\OT1/cmr/m/n/9 )\O
 ML/cmm/m/it/9 ; \OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cmsy/m/n/9 ! []\OT1/
 cmr/m/n/9 )\OML/cmm/m/it/9 ; [] ; \OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cm
@@ -581,33 +589,39 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
  [2]
 [3
 
-] (termPaper.aux) ) 
+] (termPaper.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ ) 
 Here is how much of TeX's memory you used:
- 12852 strings out of 493634
- 260071 string characters out of 3141309
- 315733 words of memory out of 3000000
- 16006 multiletter control sequences out of 15000+200000
- 26653 words of font info for 50 fonts, out of 3000000 for 9000
+ 12961 strings out of 493634
+ 261327 string characters out of 3141309
+ 319402 words of memory out of 3000000
+ 16102 multiletter control sequences out of 15000+200000
+ 29415 words of font info for 59 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
- 55i,12n,65p,1713b,879s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/
-8r.enc}<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.
-pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi9.pfb
-><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:
-/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Pro
-gram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Progra
-m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program F
-iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program File
-s (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (
-x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files (x86
-)/MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.
-9/fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/ty
-pe1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/tim
-es/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.
-pfb>
-Output written on termPaper.pdf (3 pages, 161700 bytes).
+ 55i,20n,65p,1713b,879s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Progra
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cmextra/cmbsy9.pfb><C:/Pro
+gram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx9.pfb><C:/Progra
+m Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Program F
+iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/Program File
+s (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb><C:/Program F
+iles (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/Program Files (x8
+6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss9.pfb><C:/Program Files (x86)/
+MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86)/MiK
+TeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX
+ 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.
+9/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files (x86)/MiKTeX 2.9/f
+onts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/
+urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/
+utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb>
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on termPaper.pdf (3 pages, 184168 bytes).
 PDF statistics:
- 72 PDF objects out of 1000 (max. 8388607)
+ 84 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
