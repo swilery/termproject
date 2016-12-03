@@ -30,6 +30,7 @@
 % authoryear    To obtain author/year citation style instead of numeric.
 
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{tikz}
 \usetikzlibrary{decorations.markings}
 \usetikzlibrary{positioning}
@@ -146,13 +147,13 @@ Now we are in a position to introduce the GFG.
 \node[v, label=call/entry] 	(dotNt)		[left = of dotN]		{$S\longrightarrow{\bullet{Nt}}$};
 \node[v, label=return/scan] 	(Ndott)  	[below = of dotNt]		{$S\longrightarrow{N\bullet{t}}$};
 \node[v, label={[below = 0.5cm]:exit}] 	(Ntdot)  	[below = of Ndott]		{$S\longrightarrow{Nt\bullet}$};
-\node[v, label=call/entry/scan] 	(dottN)  	[right = of dotN]		{$S\longrightarrow{\bullet{tN}}$};
-\node[v] 	(tdotN)  	[below = of dottN]		{$S\longrightarrow{t\bullet{N}}$};
+\node[v, label=entry/scan] 	(dottN)  	[right = of dotN]		{$S\longrightarrow{\bullet{tN}}$};
+\node[v, label={[below = 0.5cm]:call}] 	(tdotN)  	[below = of dottN]		{$S\longrightarrow{t\bullet{N}}$};
 \node[v, label=exit/return] 	(tNdot)  	[below = of tdotN]		{$S\longrightarrow{tN\bullet}$};
 \path(dotS)		edge	node			{entry}		(dotNt)
 	 (dotS)		edge	node			{entry}		(dottN)
 	 (dotNt)	edge	node[below]			{call}		(dotN)
-	 (dottN)	edge	node[below]			{call}		(dotN)
+	 (tdotN)	edge	node			{call}		(dotN)
 	 (dotN)		edge	node			{entry}		(dottt)
 	 (dottt)	edge	node		{scan: $t$}	(tdott)
 	 (tdott)	edge	node		{scan: $t$}	(ttdot)
@@ -167,6 +168,18 @@ Now we are in a position to introduce the GFG.
 \caption{Example of a GFG for the preceding grammar.} \label{fig:M1}
 \end{center}	
 \end{figure}
+
+Figure \ref{fig:M1} depicts the GFG associated with the preceding grammar. The following definition comes naturally.
+
+Definition: A path in a GFG \textit{generates} the word $w$ by concatenating the labels along its sequence of edges.
+
+Those famaliar with automata theory may recognize that a GFG resembles a non-deterministic finite-state automaton (NFA) which starts at $\bullet{S}$ and accepts at $S\bullet$. The idea is that each path from $\bullet{S}$ to $S\bullet$ generates a word recognized by the automaton. However, in general, this is not the case. To see this, consider the path $P = (\bullet{S}, S\longrightarrow{\bullet{tN}}, S\longrightarrow{t\bullet{N}}, \bullet{N}, N\longrightarrow{\bullet{tt}}, N\longrightarrow{t\bullet{t}}, N\longrightarrow{tt\bullet}, N\bullet, S\longrightarrow{N\bullet{t}}, S\longrightarrow{Nt\bullet}, S\bullet)$ in Figure \ref{fig:M1}. $P$ generates the word "tttt" which is not part of the original grammar. To maintain correctness, we must restrict the valid paths the automaton can take. In the case of $P$, the automaton must realize that after traversing the edge $(S\longrightarrow{t\bullet{N}}, \bullet{N})$ it must traverse $(N\bullet, S\longrightarrow{tN\bullet})$ instead of $(N\bullet, S\longrightarrow{N\bullet{t}})$. In general, the automaton can choose an arbitrary outgoing edge at a start node but at an end node, it must choose the return edge corresponding to the call edge it took. This behavior can be represented by a stack, by which when the automaton encounters a call node, it pushes the corresponding return node on the stack. Subsequently at an end node, the automaton pops the stack. In the case of $P$, $(S\longrightarrow{tN\bullet})$ gets pushed on the stack at $(S\longrightarrow{t\bullet{N}}$) and it gets popped at $N\bullet$. Dr. Bilardi and Pingali called this automaton a non-deterministic GFG automaton (NGA). We have the following definition.
+
+Definition: The valid paths a NGA could follow from $\bullet{S}$ to $S\bullet$ are called \textit{complete balanced paths (CBPs)}.
+
+\textit{Theorem 1}: Let $CFG = (N, T, P, S)$ and let $w\in{T^*}$. $w$ is part of the language produced by $CFG$ iff a CBP of GFG(CFG) generates $w$.
+
+\textit{Proof}: Please see \cite{bilardi-pingali}.
 \appendix
 \section{Appendix Title}
 
