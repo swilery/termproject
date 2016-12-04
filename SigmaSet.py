@@ -53,15 +53,15 @@ class SSet:
         if self.callSet.get(key) == None:
             return False
         return True
-    '''
+    
     def findEndPoints(self):
-        
+        '''
         Go through nodeSet and find all nodes whose end node
         with a counter matching it's own is not in the sigma set.
         These are the nodes we need to start search from on the next iteration
         Don't need to look through call set as any call node has an epsilon weighted
         edge to the start node, therefore, will never applicable
-        
+        '''
         initialNodes = {}
         for n in self.nodeSet:
             sigmaItem = self.nodeSet.get(n)
@@ -80,6 +80,6 @@ class SSet:
                     noEndNode = True
                     # end node not in sigma set, so we want to
                     # start searching with this node 
-        #return initialNodes
-        return self.pathSet
-        '''
+        return initialNodes
+        #return self.pathSet
+        

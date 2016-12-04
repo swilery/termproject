@@ -1,4 +1,4 @@
- S -> E
- E -> E Q F | F
- F -> a
- Q -> x | / | epsilon
+S -> A T | a T
+A -> a | B A
+B -> epsilon
+T -> b b b

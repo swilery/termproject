@@ -26,7 +26,7 @@ class Edge:
 
 class GFG:
     dot = "."
-    DEBUG = False
+    DEBUG = True
     EPSILON = unichr(949)
 
     def __init__(self,grammarFile):
@@ -68,11 +68,13 @@ class GFG:
             for production in reader:
                 #production = production.replace(" ","")
                 preNodes = re.split("->|[|]|\n",production)
+                
                 '''
                 The last element of preNodes is the empty string. We don't want
                 it so let's pop it.
                 '''
-                preNodes.pop()
+                if len(preNodes[len(preNodes)-1])<=0:                   
+                    preNodes.pop()
                 preNodes = map(lambda s: s.strip(), preNodes)
                 preNodes = map(lambda s: s.split(), preNodes)
                 #print preNodes
@@ -98,7 +100,6 @@ class GFG:
             
                 if self.DEBUG:
                     print "Production: "+str(preNodes)
-        
                 for i in range(1,len(preNodes)):
                     if self.DEBUG:
                         print "\tBegin Evaluating "+preNodes[i][0]
@@ -163,7 +164,7 @@ class GFG:
                                 self.dbPrint(prevNode.value, nonTerminalStartNode.value, "epsilon")
                                 self.dbPrint(nonTerminalEndNode.value, newNode.value, "epsilon")
                         else:
-                            if c==self.EPSILON:
+                            if c==self.EPSILON or c=="epsilon":
                                 c = "epsilon"
                                 charlist = [self.dot]
                                 productionString = [newStartNode.value[1:]]+["->"]+preNodes[i][0:counter-1]+charlist+preNodes[i][counter+1:]

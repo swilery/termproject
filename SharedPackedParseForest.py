@@ -100,22 +100,65 @@ class SPPF:
         alpha = alpha[0:alpha.find(toSearch)]
         if len(after)>0 and len(alpha)==0:
             y = sppfNodev
-        else:
+        else:                
             nodeName = s + str(startPos) + str(endPos)
             y = self.nodeNames.get(nodeName)
             if y == None:
                 print "Created "+ nodeName
+                
                 y = self.makeNode(nodeName,startPos,endPos,1)
                 self.updateNonLeafNodes(y)
+                print "\t\t "+str(y)
             else:
                 print "Accessed node "+y.name
             foundV = False
             foundW = False
+            '''
+
+            Loop through edges of node which should be FAMILIES
+            Check node name for each family to see if it is a concatenation of v + w (or just v if w is none)
+            If it is, do nothing
+            If not found,
+                add new family - AND node
+                    add two children v and w to new AND node
+                    
+
+            '''
+            searchString = "AND"
+            if sppfNodew != None and sppfNodev != None and sppfNodew.name == sppfNodev.name:
+                sppfNodew = None
+            if sppfNodew != None:
+                searchString = searchString + sppfNodew.name
+            if sppfNodev != None:
+                searchString = searchString + sppfNodev.name
+            foundFamily = False
+            for e in y.edges:
+                if e.endNode.name == searchString:
+                    foundFamily = True
+
+            if not foundFamily:
+                #add AND node connect y - > AND node
+                #connect AND node -> v and -> w depending on if they exist
+                print "\t Created AND node/family labeled "+searchString
+                andNode = self.makeNode(searchString,startPos,endPos,0)
+                andEdge = self.makeEdge(y,andNode)
+                self.addEdge(andEdge)
+                if sppfNodew != None:
+                    wEdge = self.makeEdge(andNode,sppfNodew)
+                    self.addEdge(wEdge)
+                    print "\t child : "+sppfNodew.name
+                if sppfNodev != None:
+                    vEdge = self.makeEdge(andNode,sppfNodev)
+                    self.addEdge(vEdge)
+                    print "\t child : "+sppfNodev.name
+            '''
             if sppfNodew == None:
                 for e in y.edges:
                     if e.endNode.name == sppfNodev.name:
                         foundV = True
                 if not foundV:
+                    print "\tAdded child "+sppfNodev.name
+                    print "\t\t "+str(sppfNodev)
                     e = self.makeEdge(y,sppfNodev)
                     self.addEdge(e)
             else:
@@ -128,35 +171,32 @@ class SPPF:
                 #TODO: check if none?
                 if not foundV and sppfNodev != None:
                     print "\tAdded child "+sppfNodev.name
+                    print "\t\t "+str(sppfNodev)
                     e = self.makeEdge(y,sppfNodev)
                     self.addEdge(e)
                 if not foundW:
                     if (sppfNodev != None and sppfNodew.name != sppfNodev.name) or sppfNodev==None:
                         print "\tAdded child "+sppfNodew.name
+                        print "\t\t "+str(sppfNodew)
                         e = self.makeEdge(y,sppfNodew)
                         self.addEdge(e)
+            '''
         return y
          
         
     def printSPPF(self,root):
         print {n.toString() for n in self.nodes}
-        #self.printNodeInfo(root)
+        self.printNodeInfo(root)
         # Crap, this is over 80 characters long.
         #print {u.toString()+" -> "+str({v.toString() for v in vs}) for u,vs in self.edges.items()}
 
     #Since I switched edges to be a list by node
     # We can use a recursive function to print out the tree info
     def printNodeInfo(self,node):
-        print "Looking at "+node.name
         print node.name + " has " + str(len(node.edges)) + " children"
         for e in node.edges:
             print e.endNode.toString()
-            #self.printNodeInfo(e.endNode)
-            print e.endNode.name + " has " + str(len(e.endNode.edges)) + " children"
-            for v in e.endNode.edges:
-                print "here" + v.endNode.toString()
-        if len(node.edges)>0:
-            print "End of children for "+node.name
+            self.printNodeInfo(e.endNode)
 
     def findNode(self,root,node):
         if root.name == node.name and root.startPos == node.startPos and root.endPos == root.endPos:

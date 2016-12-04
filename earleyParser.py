@@ -72,18 +72,18 @@ class Parser:
                     if self.DFSDEBUG:
                         print end.value + " IS a call node. Adding to call set with ctr "+str(ctr)
                     if not sset.isItemInCallSet(end,ctr):
-                        sset.insertSigmaCallItem(end,ctr,node,ctr)
+                        sset.insertSigmaCallItem(end,ctr)
                         ctr=counter
                         haveInserted = True
                 else:
                     if self.DFSDEBUG:
                         print end.value + " is NOT a call node. Adding to sigma set with ctr "+str(ctr)
                     if not sset.isItemInSigmaSet(end,ctr):
-                        sset.insertSigmaSetItem(end,ctr,node,ctr)
+                        sset.insertSigmaSetItem(end,ctr)
                         haveInserted = True
                     else:
                         key = end.value + str(ctr)
-                        sset.addPrevNodeToSigmaSetItem(key,node,ctr)
+                        #sset.addPrevNodeToSigmaSetItem(key,node,ctr)
                         
                 if e.weight == "epsilon":
                     #if self.DFSDEBUG:
@@ -120,11 +120,14 @@ class Parser:
 
         parseString = parseString.split(" ")
         parseString = [""]+parseString
+
+        #sigmaSet = SigmaSet.SSet(0)
+        #self.sigmaSets.append(sigmaSet)
         
         for i in range(0,len(parseString)):
             sigmaSet = SigmaSet.SSet(0)
             self.sigmaSets.append(sigmaSet)
-            
+        
         sset = self.sigmaSets[0]
         for e in start.edges:
             end = e.endNode
@@ -152,9 +155,47 @@ class Parser:
             endNode = endItem.node
             if endNode.value[-1] == "." and endNode.value[0:endNode.value.find('-')]=="S":
                 if endItem.counter == 0:
-                    w = endItem.sppfNode
-
+                   w = endItem.sppfNode
         '''
+
+        while counter < (len(parseString)) and len(nodesToSearch)>0:
+            # string manipulation to adjust period and get character we are looking for
+            # I just realized the bit below isn't needed
+            # posString = stringFile[0:counter]+dot+stringFile[counter:]
+
+            charToSearch = parseString[counter]
+            if len(charToSearch) == 0:
+                charToSearch = "epsilon"  
+            #get our sigma set from our list for this iteration
+
+            sigmaSet = self.sigmaSets[counter]
+
+            for sigmaN in nodesToSearch:
+                n = nodesToSearch.get(sigmaN)
+                if self.DEBUG:
+                    print sigmaN + " looking for " + charToSearch
+                ctr = sigmaN[-1]
+                self.dfsGFG(n,charToSearch,sigmaSet,ctr,counter)
+
+            #analyze sigma set
+            #remove sigma items with null points next sigmaset[counter++]
+            
+            # find nodes in last sigma set with outgoing edges to nodes
+            # not in our graph. These are the nodes we want to start our
+            # search with next iteration
+            # if the sigma set is empty, then nodesToSearch will also be empty
+            # and our loop will quit
+            nodesToSearch = sigmaSet.findEndPoints()
+            
+            #self.analyzeSigmaSet(sigmaSet,nodesToSearch,counter)
+            
+            #create sigma set for next round
+            counter+=1
+            sigmaSet = SigmaSet.SSet(counter)
+            self.sigmaSets.append(sigmaSet)
+
+        
+        
         # if we went through the whole string, and the
         # end node is in the last sigma set
         validString = False
@@ -167,15 +208,16 @@ class Parser:
             if lastSigmaSet.hasEndNode!=None:
                 validString = True
         print validString
-        validString = False
-        '''
+        
 
+        '''
         
         if w != None:    
-            self.tree.printSPPF(w)
+            #self.tree.printSPPF(w)
             print "This string is valid given grammar"
         else:
             print "This string is NOT valid given grammar"
+        
 
     # this is a helper debug function
     # that loops through sigma sets and prints out their node and call sets
@@ -203,7 +245,7 @@ class Parser:
         while len(R)>0:
             sigmaItem = R.pop()
             if sigmaItem.node.callNode != None:
-                #print sigmaItem.node.value + " evaluating call node"
+                print sigmaItem.node.value + " evaluating call node"
                 for e in sigmaItem.node.edges:
                     startNode = e.endNode
                 for e in startNode.edges:
@@ -213,8 +255,10 @@ class Parser:
                     if val != None:
                         R.append(val)
                 if H.get(startNode.value[1:])!= None:
+                    print "XXX in NULLABLE"+startNode.value[1:]
                     #TODO: check v?
                     nonTerminal = sigmaItem.node.value[0:sigmaItem.node.value.find('-')]
+                    
                     y = self.tree.makeNodeAdvanced(sigmaItem.node.callNode.value,sigmaItem.counter,ctr,sigmaItem.sppfNode,v,nonTerminal)
                     newKey = sigmaItem.node.callNode.value + str(sigmaItem.counter)
                     newNode = sigmaItem.node.callNode
@@ -222,12 +266,16 @@ class Parser:
                     if val != None:
                         R.append(val)               
             if sigmaItem.node.value[-1] == ".":
-                #print sigmaItem.node.value + " evaluating"
+                print sigmaItem.node.value + " evaluating"
                 nonTerminal = sigmaItem.node.value[0:sigmaItem.node.value.find('-')]
-                if sigmaItem.sppfNode == None:
+                
+                w = sigmaItem.sppfNode
+
+                if w == None:
                     nodeName = nonTerminal+str(ctr)+str(ctr)
                     if self.tree.nodeNames.get(nodeName) == None:
-                        v = self.tree.makeNode(nodeName,ctr,ctr,1)
+                        
+                        v = self.tree.makeNode(nodeName,ctr,ctr,2)
                         self.tree.updateNonLeafNodes(v)
                     else:
                         v = self.tree.nodeNames.get(nodeName)
@@ -236,22 +284,33 @@ class Parser:
                     epsilonNode = "epsilon"+str(ctr)+str(ctr)
                     foundEpsilonChild = False
                     for e in w.edges:
-                        if e.endNode.name == epsilonNode:
+                        if e.endNode.name == "AND"+epsilonNode:
                             foundEpsilonChild = True
                     if not foundEpsilonChild:
-                        ep = self.tree.makeNode(epsilonNode,ctr,ctr,1)
+                        ep = self.tree.makeNode(epsilonNode,ctr,ctr,2)
                         self.tree.updateNonLeafNodes(ep)
-                        e = self.tree.makeEdge(w,ep)
+                        epsilonAnd = self.tree.makeNode("AND"+epsilonNode,ctr,ctr,0)
+                        e = self.tree.makeEdge(w,epsilonAnd)
                         self.tree.addEdge(e)
-                            
+                        e2 = self.tree.makeEdge(epsilonAnd,ep)
+                        self.tree.addEdge(e2)
+                print "about to add "+sigmaItem.node.value            
                 if sigmaItem.counter == ctr:
                     H[nonTerminal] = w
+                    print "ADDING TO NULLABLE"+nonTerminal
                 sigmaSet = self.sigmaSets[sigmaItem.counter]
                 for n in sigmaSet.callSet:
                     index = n.find(".")+1
                     if n[index:index+len(nonTerminal)] == nonTerminal:
                         item = sigmaSet.callSet.get(n)
                         y = self.tree.makeNodeAdvanced(item.node.callNode.value,item.counter,ctr,item.sppfNode,w,nonTerminal)
+                        #TODO - can this be none?
+                        '''
+                        if y!=None:
+                            print "XXX \t "+y.name
+                        if w != None:
+                            print "XXX \t child: "+w.name
+                            '''
                         newKey = item.node.callNode.value + str(item.counter)
                         newNode = item.node.callNode
                         val = self.checkSigmaPathSetsAndAdd(sset,newKey,newNode,item.counter,parseString,y)
@@ -260,8 +319,10 @@ class Parser:
         nextTerminal = parseString[(ctr+1):(ctr+2)]
         nextChar = nextTerminal
         nextTerminal = str(nextTerminal) + str(ctr) + str(ctr+1)
-        v = self.tree.makeNode(nextTerminal,ctr,ctr+1,1)
-        self.tree.updateNonLeafNodes(v)
+        v = self.tree.nodeNames.get(nextTerminal)
+        if v == None:
+            v = self.tree.makeNode(nextTerminal,ctr,ctr+1,2)
+            self.tree.updateNonLeafNodes(v)
         while len(sset.pathSet.keys())>0:
             key, path = sset.pathSet.popitem();
             if len(path.node.edges)==1:
@@ -273,14 +334,15 @@ class Parser:
                     newpath = e.endNode
                     weight = e.weight
                 if newpath != "":
+                    
                     num = path.counter
                     w = path.sppfNode
                     print "From node "+path.node.value+" we are now looking at "+newpath.value
                     if w != None:
                         print "And we are using w = "+w.name
-                    #TODO: some numbers aren't showing up here?
-                    #don't think this matters
                     y = self.tree.makeNodeAdvanced(newpath.value,num,ctr+1,w,v,weight)
+                    #if y != None:
+                        #print "ZZZ \t "+y.name
                     if(ctr<len(parseString)-1):
                         val = self.checkSigmaPathSetsAndAdd(self.sigmaSets[ctr+1],newpath.value+str(num),newpath,num,parseString,y,1)
                         if val != None:
@@ -288,18 +350,18 @@ class Parser:
 
     def checkSigmaPathSetsAndAdd(self,sset,key,prod,ctr,parseString,sppf=None,increment=0):
         #print sppf
+        item = None
         if sset.nodeSet.get(key) == None and sset.callSet.get(key) == None:
             if prod.callNode != None:
                 item = sset.insertSigmaCallItem(prod,ctr,sppf)
             else:
                 item = sset.insertSigmaSetItem(prod,ctr,sppf)
-            dot_index = prod.value.find(".")
-            if dot_index<(len(prod.value)-1) and ctr < len(parseString)-1:
-                if prod.value[dot_index+1] == parseString[ctr+1+increment]:
-                    sset.insertSigmaSetPathItem(prod,ctr,sppf)
-            return item
+        dot_index = prod.value.find(".")
+        if dot_index<(len(prod.value)-1) and ctr < len(parseString)-1:
+            if prod.value[dot_index+1] == parseString[ctr+1+increment]:
+                sset.insertSigmaSetPathItem(prod,ctr,sppf)
+        return item
         #TODO: if it's already in the set, do we still update it with sppf?
-        return None
             
     
 def main():
