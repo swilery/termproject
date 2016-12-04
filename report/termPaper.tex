@@ -173,7 +173,7 @@ Figure \ref{fig:M1} depicts the GFG associated with the preceding grammar. The f
 
 \textit{Definition}: A path in a GFG \textit{generates} the word $w$ by concatenating the labels along its sequence of edges.
 
-Those famaliar with automata theory may recognize that a GFG resembles a non-deterministic finite-state automaton (NFA) which starts at $\bullet{S}$ and accepts at $S\bullet$. The idea is that each path from $\bullet{S}$ to $S\bullet$ generates a word recognized by the automaton. However, in general, this is not the case. To see this, consider the path $P = (\bullet{S}, S\longrightarrow{\bullet{tN}}, S\longrightarrow{t\bullet{N}}, \bullet{N}, N\longrightarrow{\bullet{tt}}, N\longrightarrow{t\bullet{t}}, N\longrightarrow{tt\bullet}, N\bullet, S\longrightarrow{N\bullet{t}}, S\longrightarrow{Nt\bullet}, S\bullet)$ in Figure \ref{fig:M1}. $P$ generates the word "tttt" which is not part of the original grammar. To maintain correctness, we must restrict the valid paths the automaton can take. In the case of $P$, the automaton must realize that after traversing the edge $(S\longrightarrow{t\bullet{N}}, \bullet{N})$ it must traverse $(N\bullet, S\longrightarrow{tN\bullet})$ instead of $(N\bullet, S\longrightarrow{N\bullet{t}})$. In general, the automaton can choose an arbitrary outgoing edge at a start node but at an end node, it must choose the return edge corresponding to the call edge it took. This behavior can be represented by a stack, by which when the automaton encounters a call node, it pushes the corresponding return node on the stack. Subsequently at an end node, the automaton pops the stack. In the case of $P$, $(S\longrightarrow{tN\bullet})$ gets pushed on the stack at $(S\longrightarrow{t\bullet{N}}$) and it gets popped at $N\bullet$. Dr. Bilardi and Pingali called this automaton a non-deterministic GFG automaton (NGA). We have the following definition.
+Those familiar with automata theory may recognize that a GFG resembles a non-deterministic finite-state automaton (NFA) which starts at $\bullet{S}$ and accepts at $S\bullet$. The idea is that each path from $\bullet{S}$ to $S\bullet$ generates a word recognized by the automaton. However, in general, this is not the case. To see this, consider the path $P = (\bullet{S}, S\longrightarrow{\bullet{tN}}, S\longrightarrow{t\bullet{N}}, \bullet{N}, N\longrightarrow{\bullet{tt}}, N\longrightarrow{t\bullet{t}}, N\longrightarrow{tt\bullet}, N\bullet, S\longrightarrow{N\bullet{t}}, S\longrightarrow{Nt\bullet}, S\bullet)$ in Figure \ref{fig:M1}. $P$ generates the word "tttt" which is not part of the original grammar. To maintain correctness, we must restrict the valid paths the automaton can take. In the case of $P$, the automaton must realize that after traversing the edge $(S\longrightarrow{t\bullet{N}}, \bullet{N})$ it must traverse $(N\bullet, S\longrightarrow{tN\bullet})$ instead of $(N\bullet, S\longrightarrow{N\bullet{t}})$. In general, the automaton can choose an arbitrary outgoing edge at a start node but at an end node, it must choose the return edge corresponding to the call edge it took. This behavior can be represented by a stack, by which when the automaton encounters a call node, it pushes the corresponding return node on the stack. Subsequently at an end node, the automaton pops the stack. In the case of $P$, $(S\longrightarrow{tN\bullet})$ gets pushed on the stack at $(S\longrightarrow{t\bullet{N}}$) and it gets popped at $N\bullet$. Dr. Bilardi and Pingali called this automaton a non-deterministic GFG automaton (NGA). We have the following definition.
 
 \textit{Definition}: The valid paths a NGA could follow from $\bullet{S}$ to $S\bullet$ are called \textit{complete balanced paths (CBPs)}.
 
@@ -234,6 +234,49 @@ S&\longrightarrow{N \: t \: | \: t \: N} \\
 N&\longrightarrow{t \: t}
 \end{align*}
 
+\section{Shared Packed Parse Forest (SPPF}
+Even though a Shared Packed Parse Forest was the purpose of her algorithm, Dr. Elizabeth Scott only gave it a brief description. Here, we will try to provide a more intuitive understanding of this data structure. First, consider the following ambiguous grammar:$$S \longrightarrow S \: S \: | \: u$$
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,node distance = 0.5cm,thick]
+\tikzstyle{v}=[]
+\node[v]	(S03)	  					   		{$S(0,3)$};
+\node[v]	(S02)  	[below left= of S03]		{$S(0,2)$};
+\node[v]	(S23)  	[below right= of S03]		{$S(2,3)$};
+\node[v]	(S01)  	[below left= of S02]		{$S(0,1)$};
+\node[v]	(S12)  	[below right= of S02]		{$S(1,2)$};
+\node[v]	(u01)  	[below = of S01]			{$u(0,1)$};
+\node[v]	(u12)  	[below = of S12]			{$u(1,2)$};
+\node[v]	(u23)  	[right = of u12]			{$u(2,3)$};
+\node[v]	(T03)	[below = of u12]  			{$S(0,3)$};
+\node[v]	(T01)  	[below left= of T03]		{$S(0,1)$};
+\node[v]	(T13)  	[below right= of T03]		{$S(1,3)$};
+\node[v]	(T12)  	[below left= of T13]		{$S(1,2)$};
+\node[v]	(T23)  	[below right= of T13]		{$S(2,3)$};
+\node[v]	(v12)  	[below = of T12]			{$u(1,2)$};
+\node[v]	(v01)  	[left = of v12]				{$u(0,1)$};
+\node[v]	(v23)  	[below = of T23]			{$u(2,3)$};
+\path(S03)		edge	node			{}		(S02)
+     (S03)		edge	node			{}		(S23)
+     (S02)		edge	node			{}		(S01)
+     (S02)		edge	node			{}		(S12)
+     (S01)		edge	node			{}		(u01)
+     (S12)		edge	node			{}		(u12)
+     (S23)		edge	node			{}		(u23)
+     (T03)		edge	node			{}		(T01)
+     (T03)		edge	node			{}		(T13)
+     (T13)		edge	node			{}		(T12)
+     (T13)		edge	node			{}		(T23)
+     (T01)		edge	node			{}		(v01)
+     (T12)		edge	node			{}		(v12)
+     (T23)		edge	node			{}		(v23);
+\end{tikzpicture}
+\caption{The two parse trees of "uuu" for the preceding grammar} \label{fig:M3}
+\end{center}	
+\end{figure}
+
+Figure \ref{fig:M3} displays the two parse trees of the string "uuu" that is part of the above grammar. The meaning of the numbers at each node are as follows. Giving the string "uuu", number the string as shown:$$0 \quad u \quad 1 \quad u \quad 2 \quad u \quad 3$$ So $u(0,1)$ indicates that the $u$ of interest is between the numbers $0$ and $1$,  $u(1,2)$ indicates that the $u$ of interest is between the numbers $1$ and $2$, and so on. The numbers of the interior nodes are just natural extensions of this pattern.
 \appendix
 \section{Appendix Title}
 
