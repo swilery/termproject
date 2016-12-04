@@ -108,11 +108,9 @@ class GFG:
                     productionString = ''.join(productionString)
                     newNode = self.make_node(None,productionString)
                     newEdge = self.make_edge(prevNode,newNode,"epsilon")
-
                     if self.DEBUG:
                         self.dbPrint(productionString)
                         self.dbPrint(prevNode.value, newNode.value, "epsilon")
-
                     counter = 0;
                     for c in preNodes[i]:
                         
@@ -167,10 +165,17 @@ class GFG:
                         else:
                             if c==self.EPSILON:
                                 c = "epsilon"
-                            newEdge = self.make_edge(prevNode,newNode,c)
-                            if self.DEBUG:
-                                self.dbPrint(prevNode.value, newNode.value, c)
-                    
+                                charlist = [self.dot]
+                                productionString = [newStartNode.value[1:]]+["->"]+preNodes[i][0:counter-1]+charlist+preNodes[i][counter+1:]
+                                productionString = ''.join(productionString)
+                                if self.DEBUG:
+                                    print "\t\tChanging value of node "+prevNode.value+" to "+productionString
+                                prevNode.value = productionString
+                                newNode = prevNode
+                            else:                               
+                                newEdge = self.make_edge(prevNode,newNode,c)
+                                if self.DEBUG:
+                                    self.dbPrint(prevNode.value, newNode.value, c)
                     endEdge = self.make_edge(newNode,newEndNode,"epsilon")
                     if self.DEBUG:
                         self.dbPrint(newNode.value, newEndNode.value, "epsilon")

@@ -1,2 +1,2 @@
 S -> A b | b A
-A -> b b | ε
+A -> b b

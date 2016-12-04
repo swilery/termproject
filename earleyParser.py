@@ -12,6 +12,7 @@ class Parser:
         self.gfg = GrammarFlowGraph.GFG(grammarFile)
         self.sigmaSets = []
         self.tree = SharedPackedParseForest.SPPF()
+        self.parseTrees = []
         self.parse(stringFile)
 
     def getDot(self):
@@ -26,13 +27,9 @@ class Parser:
         sset = {}
         if self.DEBUG:
             print "Looking for "+nodeValueKey+" in sset "+str(counter)
-        while(counter>=0):
-            sset = self.sigmaSets[counter]
-            if sset.nodeSet.get(nodeValueKey)!= None:
-                break
-            counter-=1
-        if counter<0:
-            print "ERROR! No starting node found for "+nodeValueKey
+        sset = self.sigmaSets[int(str(ctr))]
+        if sset.nodeSet.get(nodeValueKey)== None:
+            print "ERROR! No start key found for "+nodeValueKey
             sys.exit()
         callSet = sset.callSet
         for callKey in callSet:
@@ -41,55 +38,71 @@ class Parser:
                 if e.endNode.value == nodeValue:
                     returnNode = callN.node.callNode
                     if endNode.value == returnNode.value:
-                        return True
-        return False
+                        return callN.counter
+        return None
 
     def dfsGFG(self,node,char,sset,ctr,counter):
         if self.DFSDEBUG:
             print "Evaluating node "+node.value+" with counter "+str(ctr)+" looking for "+char
         for e in node.edges:
             end = e.endNode
-            if self.DFSDEBUG:
-                print "Evaluating edge from "+node.value+" to "+end.value
+            #if self.DFSDEBUG:
+                #print "Evaluating edge from "+node.value+" to "+end.value
             proceed = True
             if node.isExitNode():
                 proceed = self.isEdgeValidPath(node.value,ctr,counter,end)
                 if self.DFSDEBUG:
-                    print node.value + "is an exit node, can we proeed? "+str(proceed)
-            if not proceed:
+                    print node.value + "is an exit node, can we proceed? "+str(proceed)
+                if proceed != None:
+                    ctr = proceed
+            if proceed==None:
                 continue
             if e.weight != char and e.weight != "epsilon":
-                if self.DFSDEBUG:
-                    print "Edge has a weight "+e.weight+" but we are looking for "+char+" quitting..."
+                #if self.DFSDEBUG:
+                    #print "Edge has a weight "+e.weight+" but we are looking for "+char+" quitting..."
                 return 0;
             else:
                 # if we found our last node but we haven't found our character, don't add it to sigma set
+                # only insert if not in sigma set
+                # only call dfs again if inserted (i.e. sigma set changed)
+                haveInserted = False
                 if char != e.weight and end.value == "S"+self.getDot():
                     return 0
                 if end.callNode != None:
                     if self.DFSDEBUG:
-                        print end.value + " IS a call node. Adding to call set with ctr "+str(counter)
-                    sset.insertSigmaCallItem(end,counter,node,ctr)
-                    ctr=counter
+                        print end.value + " IS a call node. Adding to call set with ctr "+str(ctr)
+                    if not sset.isItemInCallSet(end,ctr):
+                        sset.insertSigmaCallItem(end,ctr,node,ctr)
+                        ctr=counter
+                        haveInserted = True
                 else:
                     if self.DFSDEBUG:
                         print end.value + " is NOT a call node. Adding to sigma set with ctr "+str(ctr)
-                    sset.insertSigmaSetItem(end,ctr,node,ctr)
+                    if not sset.isItemInSigmaSet(end,ctr):
+                        sset.insertSigmaSetItem(end,ctr,node,ctr)
+                        haveInserted = True
+                    else:
+                        key = end.value + str(ctr)
+                        sset.addPrevNodeToSigmaSetItem(key,node,ctr)
+                        
                 if e.weight == "epsilon":
-                    if self.DFSDEBUG:
-                        print "Edge weight is epsilon. Calling DFS again..."
-                    '''
-                    This overflows the recursion limit in Python. We need a way to
-                    perform DFS without dfsGFG actually calling itself. 
-                    '''
-                    self.dfsGFG(end,char,sset,ctr,counter)
+                    #if self.DFSDEBUG:
+                        #print "Edge weight is epsilon. Calling DFS again..."
+                    
+                    #This overflows the recursion limit in Python. We need a way to
+                    #perform DFS without dfsGFG actually calling itself. 
+                    
+                    if haveInserted:
+                        self.dfsGFG(end,char,sset,ctr,counter)
                 else:
-                    if self.DFSDEBUG:
-                        print "Edge weight is "+e.weight+" which is what we are looking for. Calling DFS with epsilon"
+                    #if self.DFSDEBUG:
+                        #print "Edge weight is "+e.weight+" which is what we are looking for. Calling DFS with epsilon"
                     # weight of edge equals char
-                    self.dfsGFG(end,"epsilon",sset,ctr,counter)
+                    if haveInserted:
+                        self.dfsGFG(end,"epsilon",sset,ctr,counter)
         return 0;
 
+    
     def parse(self,stringFile):
         start = self.gfg.startNode
         counter = 0 
@@ -99,9 +112,7 @@ class Parser:
         nodesToSearch = {}
         startKey = start.value + "0"
         nodesToSearch[startKey] = start
-        sigmaSet = SigmaSet.SSet(0)
-        sigmaSet.insertSigmaSetItem(start,counter)
-        self.sigmaSets.append(sigmaSet)
+        #sigmaSet.insertSigmaSetItem(start,counter)
         continueSearch = True
 
         with codecs.open(stringFile, encoding='utf-8',mode='r') as reader:
@@ -110,42 +121,40 @@ class Parser:
         parseString = parseString.split(" ")
         parseString = [""]+parseString
         
-        #iterate through characters in string to parse
-        # we want to iterate while we have more characters to parse
-        # and nodes in our last sigma set that need searching
-        while counter < (len(parseString)) and len(nodesToSearch)>0:
-            # string manipulation to adjust period and get character we are looking for
-            # I just realized the bit below isn't needed
-            # posString = stringFile[0:counter]+dot+stringFile[counter:]
-
-            charToSearch = parseString[counter]
-            if len(charToSearch) == 0:
-                charToSearch = "epsilon"  
-            #get our sigma set from our list for this iteration
-                
-            sigmaSet = self.sigmaSets[counter]
-
-            for sigmaN in nodesToSearch:
-                n = nodesToSearch.get(sigmaN)
-                if self.DEBUG:
-                    print sigmaN + " looking for " + charToSearch
-                ctr = sigmaN[-1]
-                self.dfsGFG(n,charToSearch,sigmaSet,ctr,counter)
-               
-            
-            # find nodes in last sigma set with outgoing edges to nodes
-            # not in our graph. These are the nodes we want to start our
-            # search with next iteration
-            # if the sigma set is empty, then nodesToSearch will also be empty
-            # and our loop will quit
-            nodesToSearch = sigmaSet.findEndPoints()
-
-            #create sigma set for next round
-            counter+=1
-            sigmaSet = SigmaSet.SSet(counter)
+        for i in range(0,len(parseString)):
+            sigmaSet = SigmaSet.SSet(0)
             self.sigmaSets.append(sigmaSet)
+            
+        sset = self.sigmaSets[0]
+        for e in start.edges:
+            end = e.endNode
+            if end.callNode != None:
+                sset.insertSigmaCallItem(end,0)
+            else:
+                sset.insertSigmaSetItem(end,0)
+            dot_index = end.value.find(".")
+            if dot_index<(len(end.value)-1):
+                if end.value[dot_index+1] == parseString[1]:
+                    print end.value
+                    sset.insertSigmaSetPathItem(end,0)
 
+        for i in range(0,len(parseString)):
+            sset = self.sigmaSets[i]
+            print "ANALYZING SIGMA SET "+str(i)
+            self.analyzeSigmaSet(sset,i,parseString)
 
+        #self.debugSigmaSets(3)
+
+        w = None
+        sset = self.sigmaSets[len(parseString)-1]
+        for n in sset.nodeSet:
+            endItem = sset.nodeSet.get(n)
+            endNode = endItem.node
+            if endNode.value[-1] == "." and endNode.value[0:endNode.value.find('-')]=="S":
+                if endItem.counter == 0:
+                    w = endItem.sppfNode
+
+        '''
         # if we went through the whole string, and the
         # end node is in the last sigma set
         validString = False
@@ -157,98 +166,141 @@ class Parser:
             # therefore we need to loop through all nodes in our last sigma set
             if lastSigmaSet.hasEndNode!=None:
                 validString = True
-        if validString:
-            # for every end node in final set, call retrace path on it
-            for end in lastSigmaSet.nodeSet:
-                if end[0:2] == "S.":
-                    print "\nPath:\n"
-                    endNode = lastSigmaSet.nodeSet.get(end)
-                    self.retracePath(last,endNode)
-                    self.tree.printSPPF()
+        print validString
+        validString = False
+        '''
+
+        
+        if w != None:    
+            self.tree.printSPPF(w)
             print "This string is valid given grammar"
-            #self.debugSigmaSets(last)
         else:
             print "This string is NOT valid given grammar"
 
-    def retracePath(self,num,endNode,startIndex=0):
-        sset = self.sigmaSets[num]
-        isParent = False
-        if self.gfg.graphNodes.get(endNode.node.value) != None:
-            if endNode.node.value[0:2] != "S.":
-                if endNode.node.value[0] == ".":
-                    isParent = True
-        prevValue = ""
-        for nc in endNode.prevNode:
-            n = nc[0]
-            if n!=None:
-                if n.value == prevValue:
-                    continue
-                else:
-                    prevValue = n.value
-                keyToSearch = n.value + str(nc[1])
-                index = n.value.find('->')
-                if isParent:
-                    print "NON-LEAF NODE : "+endNode.node.value[1:]
-                    print "PARENT OF PARENT NODE : "+n.value[0:index]
-                    parent = self.tree.nodeNames.get(n.value[0:index])
-                    child = self.tree.nodeNames.get(endNode.node.value[1:])
-                    if parent != None:
-                        parent.updatePos(child.startPos,child.endPos)
-                    else:
-                        #TODO: change - AND by default
-                        parent = self.tree.makeNode(n.value[0:index],child.startPos,child.endPos,0)
-                        self.tree.addNode(parent)
-                        self.tree.updateNonLeafNodes(parent)
-                    leafparentedge = self.tree.makeEdge(parent,child)
-                if sset.nodeSet.get(keyToSearch)!=None:
-                    edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
-                    
-                    if edgeWeight != "epsilon":
-                        
-                        print "LEAF : " + edgeWeight
-                        
-                        leaf = self.tree.makeNode(edgeWeight,startIndex,startIndex+1,2)
-                        self.tree.addNode(leaf)
-                        
-                        print "LEAF PARENT : "+n.value[0:index]
-                        parent = self.tree.nodeNames.get(n.value[0:index])
-                        if parent != None:
-                            parent.updatePos(startIndex,startIndex+1)
-                        else:
-                            #TODO: change - AND by default 
-                            parent = self.tree.makeNode(n.value[0:index],startIndex,startIndex+1,0)
-                            self.tree.addNode(parent)
-                            self.tree.updateNonLeafNodes(parent)    
-
-                        leafparentedge = self.tree.makeEdge(parent,leaf)
-                        self.tree.addEdge(leafparentedge)
-                        startIndex+=1
-                        
-                    endNode = sset.nodeSet.get(keyToSearch)
-                    self.retracePath(num,endNode,startIndex)
-                elif sset.callSet.get(keyToSearch)!=None:
-                    #is this needed? will it always be epsilon
-                    '''
-                    edgeWeight = self.gfg.find_edge_weight(n,endNode.node)
-                    if edgeWeight != "epsilon":
-                        print "LEAF : " + edgeWeight
-                        print "LEAF PARENT : "+n.value[0:index]
-                    '''
-                    endNode = sset.callSet.get(keyToSearch)
-                    self.retracePath(num,endNode,startIndex)
-                else:
-                    self.retracePath((num-1),endNode,startIndex)
-
-    def debugSigmaSets(self,num):
-        for i in range(0,num+1):
+    # this is a helper debug function
+    # that loops through sigma sets and prints out their node and call sets
+    def debugSigmaSets(self,num, start=0):
+        for i in range(start,num+1):
             print "SIGMA SET "+str(i)+":"
             sset = self.sigmaSets[i]
             print "NODE SET:"
             for n in sset.nodeSet:
                 print n + " from " + str(len(sset.nodeSet.get(n).prevNode)) + " other nodes"
+                print sset.nodeSet.get(n).sppfNode
             print "CALL SET:"
             for c in sset.callSet:
                 print c
+
+    def analyzeSigmaSet(self,sset,ctr,parseString):
+        R = []
+        for n in sset.nodeSet:
+            R.append(sset.nodeSet.get(n))
+        for n in sset.callSet:
+            R.append(sset.callSet.get(n))
+        H = {}
+        v = None
+        w = None
+        while len(R)>0:
+            sigmaItem = R.pop()
+            if sigmaItem.node.callNode != None:
+                #print sigmaItem.node.value + " evaluating call node"
+                for e in sigmaItem.node.edges:
+                    startNode = e.endNode
+                for e in startNode.edges:
+                    prod = e.endNode
+                    key = prod.value + str(ctr)
+                    val = self.checkSigmaPathSetsAndAdd(sset,key,prod,ctr,parseString)
+                    if val != None:
+                        R.append(val)
+                if H.get(startNode.value[1:])!= None:
+                    #TODO: check v?
+                    nonTerminal = sigmaItem.node.value[0:sigmaItem.node.value.find('-')]
+                    y = self.tree.makeNodeAdvanced(sigmaItem.node.callNode.value,sigmaItem.counter,ctr,sigmaItem.sppfNode,v,nonTerminal)
+                    newKey = sigmaItem.node.callNode.value + str(sigmaItem.counter)
+                    newNode = sigmaItem.node.callNode
+                    val = self.checkSigmaPathSetsAndAdd(sset,newKey,newNode,sigmaItem.counter,parseString,y)
+                    if val != None:
+                        R.append(val)               
+            if sigmaItem.node.value[-1] == ".":
+                #print sigmaItem.node.value + " evaluating"
+                nonTerminal = sigmaItem.node.value[0:sigmaItem.node.value.find('-')]
+                if sigmaItem.sppfNode == None:
+                    nodeName = nonTerminal+str(ctr)+str(ctr)
+                    if self.tree.nodeNames.get(nodeName) == None:
+                        v = self.tree.makeNode(nodeName,ctr,ctr,1)
+                        self.tree.updateNonLeafNodes(v)
+                    else:
+                        v = self.tree.nodeNames.get(nodeName)
+                    #TODO: do i need to update w in the sigmaItem?
+                    w = v
+                    epsilonNode = "epsilon"+str(ctr)+str(ctr)
+                    foundEpsilonChild = False
+                    for e in w.edges:
+                        if e.endNode.name == epsilonNode:
+                            foundEpsilonChild = True
+                    if not foundEpsilonChild:
+                        ep = self.tree.makeNode(epsilonNode,ctr,ctr,1)
+                        self.tree.updateNonLeafNodes(ep)
+                        e = self.tree.makeEdge(w,ep)
+                        self.tree.addEdge(e)
+                            
+                if sigmaItem.counter == ctr:
+                    H[nonTerminal] = w
+                sigmaSet = self.sigmaSets[sigmaItem.counter]
+                for n in sigmaSet.callSet:
+                    index = n.find(".")+1
+                    if n[index:index+len(nonTerminal)] == nonTerminal:
+                        item = sigmaSet.callSet.get(n)
+                        y = self.tree.makeNodeAdvanced(item.node.callNode.value,item.counter,ctr,item.sppfNode,w,nonTerminal)
+                        newKey = item.node.callNode.value + str(item.counter)
+                        newNode = item.node.callNode
+                        val = self.checkSigmaPathSetsAndAdd(sset,newKey,newNode,item.counter,parseString,y)
+                        if val != None:
+                            R.append(val)
+        nextTerminal = parseString[(ctr+1):(ctr+2)]
+        nextChar = nextTerminal
+        nextTerminal = str(nextTerminal) + str(ctr) + str(ctr+1)
+        v = self.tree.makeNode(nextTerminal,ctr,ctr+1,1)
+        self.tree.updateNonLeafNodes(v)
+        while len(sset.pathSet.keys())>0:
+            key, path = sset.pathSet.popitem();
+            if len(path.node.edges)==1:
+                newpath = ""
+                weight = ""
+                for e in path.node.edges:
+                    if [e.weight] != nextChar:
+                        continue
+                    newpath = e.endNode
+                    weight = e.weight
+                if newpath != "":
+                    num = path.counter
+                    w = path.sppfNode
+                    print "From node "+path.node.value+" we are now looking at "+newpath.value
+                    if w != None:
+                        print "And we are using w = "+w.name
+                    #TODO: some numbers aren't showing up here?
+                    #don't think this matters
+                    y = self.tree.makeNodeAdvanced(newpath.value,num,ctr+1,w,v,weight)
+                    if(ctr<len(parseString)-1):
+                        val = self.checkSigmaPathSetsAndAdd(self.sigmaSets[ctr+1],newpath.value+str(num),newpath,num,parseString,y,1)
+                        if val != None:
+                            sset.insertSigmaSetPathItem(newpath,num,y)
+
+    def checkSigmaPathSetsAndAdd(self,sset,key,prod,ctr,parseString,sppf=None,increment=0):
+        #print sppf
+        if sset.nodeSet.get(key) == None and sset.callSet.get(key) == None:
+            if prod.callNode != None:
+                item = sset.insertSigmaCallItem(prod,ctr,sppf)
+            else:
+                item = sset.insertSigmaSetItem(prod,ctr,sppf)
+            dot_index = prod.value.find(".")
+            if dot_index<(len(prod.value)-1) and ctr < len(parseString)-1:
+                if prod.value[dot_index+1] == parseString[ctr+1+increment]:
+                    sset.insertSigmaSetPathItem(prod,ctr,sppf)
+            return item
+        #TODO: if it's already in the set, do we still update it with sppf?
+        return None
+            
     
 def main():
     if len(sys.argv) != 3:
@@ -257,7 +309,6 @@ def main():
     grammarFile = sys.argv[1]
     stringFile = sys.argv[2]
     parser = Parser(grammarFile,stringFile)
-    #parser.parse()
 
 if __name__ == "__main__":
     sys.exit(main())
