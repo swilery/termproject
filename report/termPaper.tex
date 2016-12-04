@@ -283,7 +283,83 @@ Let us ignore these numbers for the moment and just consider the most natural wa
 \item Either $S_l$ contains two children, $S_m,S_s$ and $S_r$ goes directly to a leaf $u$
 \item or $S_l$ goes directly to a leaf $u$ and $S_r$ contains two children, $S_m,S_s$.
 \end{itemize}
-We can capture this intuitive notion by the tree in Figure \ref{fig:M4}.
+We can capture this intuitive notion by the \textit{and-or} tree in Figure \ref{fig:M4}, where the subscripts are ignored since they are immaterial. An \textit{and} node represents the action that you consider both children of the node while an \textit{or} node represents the action that you consider one child of the node. However, observe that this tree represents strings other than "uuu". To see this, consider starting at the root node and following its edges to both of its children. Here, you are at two \textit{or} nodes both labeled $S$. Since we are at \textit{or} nodes, we choose a single child for each node. Suppose we choose the leaf children, resulting in the string "uu". To correct this error, we reintroduce the numbers associated with each node and require that only nodes with identical names and numbers can share structure from the tree. Figure \ref{fig:M5} shows our correction.
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,node distance = 0.5cm,thick]
+\tikzstyle{v}=[]
+\node[v, label=$\land$]	(S)	  					   		{$S$};
+\node[v, label=$\lor$]	(SL)  	[below left= of S]		{$S$};
+\node[v, label=$\lor$]	(SR)  	[below right= of S]		{$S$};
+\node[v]	(ALR)  	[below left= of SL]			{$\land$};
+\node[v]	(ARL)  	[below right= of SR]			{$\land$};
+\node[v]	(SLRL)  [below left= of ALR]	{$S$};
+\node[v]	(SLRR)  [below right= of ALR]	{$S$};
+\node[v]	(SRLL)  [below left= of ARL]	{$S$};
+\node[v]	(SRLR)  [below right= of ARL]	{$S$};
+\node[v]	(u01)   [below = of SLRL]		{$u$};
+\node[v]	(u12)   [below right= of SLRR]	{$u$};
+\node[v]	(u23)   [below = of SRLR]		{$u$};
+\path(S)		edge	node			{}		(SL)
+	 (S)		edge	node			{}		(SR)
+	 (SL)		edge	[bend right = 90]		node			{}		(u01)
+	 (SL)		edge	node  			{}		(ALR)
+	 (ALR)		edge	node			{}		(SLRL)
+	 (ALR)		edge	node			{}		(SLRR)
+	 (SR)		edge	[bend left = 90]		node			{}		(u23)
+	 (SR)		edge	node  			{}		(ARL)
+	 (ARL)		edge	node			{}		(SRLL)
+	 (ARL)		edge	node			{}		(SRLR)
+	 (SLRL)		edge	node			{}		(u01)
+	 (SLRR)		edge	node			{}		(u12)
+	 (SRLL)		edge	node			{}		(u12)
+	 (SRLR)		edge	node			{}		(u23);
+\end{tikzpicture}
+\caption{The and-or tree representation of the two parse trees in Figure \ref{fig:M3}.} \label{fig:M4}
+\end{center}	
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\begin{tikzpicture}[->,>=stealth,node distance = 0.5cm,thick]
+\tikzstyle{v}=[]
+\node[v, label=$\lor$]	(S03)	  					   		{$S(0,3)$};
+\node[v]	(AL)	[below left= of S03]   		{$\land$};
+\node[v]	(AR)	[below right= of S03]   	{$\land$};
+\node[v ,label=$\land$]	(S02)  	[below left= of AL]			{$S(0,2)$};
+\node[v]	(S23)  	[below right= of AL]		{$S(2,3)$};
+\node[v]	(S13)	[below right= of AR]   		{$S(1,3)$};
+\node[v]	(ARR)	[below = of S13]   			{$\land$};
+\node[v]	(S01)  	[below left= of S02]		{$S(0,1)$};
+\node[v]	(S12)  	[below right= of S02]		{$S(1,2)$};
+\node[v]	(u01)  	[below = of S01]			{$u(0,1)$};
+\node[v]	(u12)  	[below = of S12]			{$u(1,2)$};
+\node[v]	(u23)  	[below = of ARR]			{$u(2,3)$};
+
+\path(S03)		edge	node			{}		(AL)
+	 (S03)		edge	node			{}		(AR)
+	 (AL)		edge	node			{}		(S02)
+	 (AL)		edge	node			{}		(S23)
+	 (AR)		edge	node			{}		(S01)
+	 (AR)		edge	node			{}		(S13)
+	 (S02)		edge	node			{}		(S01)
+	 (S02)		edge	node			{}		(S12)
+	 (S13)		edge	node			{}		(ARR)
+	 (ARR)		edge	node			{}		(S12)
+	 (ARR)		edge	node			{}		(S23)
+	 (S01)		edge	node			{}		(u01)
+	 (S12)		edge	node			{}		(u12)
+	 (S23)		edge	node			{}		(u23);
+\end{tikzpicture}
+\caption{The SPPF representation of the two parse trees in Figure \ref{fig:M3}.} \label{fig:M5}
+\end{center}	
+\end{figure}
+
+The data structure we have constructed is what Dr. Elizabeth Scott calls a Shared Packed Parse Forest (SPPF). For sake of completeness, we present her definition. Note that in her definition, her \textit{packed} nodes are our nameless \textit{and} nodes.
+
+\textit{Definition}: A \textit{Shared Packed Parse Forest (SPPF)} is a representation that reduces the space used to represent multiple parse trees of an ambiguous string. Nodes are are named $(x,j,i)$, when node $x$ matches substring $a_{j+1}\dots{a_i}$. Nodes which contain the same sub-tree are shared and nodes which represent the same substring for nonterminals with different parse trees are packed. 
+
 \appendix
 \section{Appendix Title}
 
