@@ -277,6 +277,13 @@ Even though a Shared Packed Parse Forest was the purpose of her algorithm, Dr. E
 \end{figure}
 
 Figure \ref{fig:M3} displays the two parse trees of the string "uuu" that is part of the above grammar. The meaning of the numbers at each node are as follows. Giving the string "uuu", number the string as shown:$$0 \quad u \quad 1 \quad u \quad 2 \quad u \quad 3$$ So $u(0,1)$ indicates that the $u$ of interest is between the numbers $0$ and $1$,  $u(1,2)$ indicates that the $u$ of interest is between the numbers $1$ and $2$, and so on. The numbers of the interior nodes are just natural extensions of this pattern.
+
+Let us ignore these numbers for the moment and just consider the most natural way that allows us to share the common subtrees that appear in both parse trees in Figure \ref{fig:M3}. Notice that both subtrees consist of a root node $S$ whose children consist of two other nodes, lets call them $S_l$ and $S_r$ for the moment. The difference between the two parse trees only begins to appear at level $3$ in which we have two alternatives:
+\begin{itemize}
+\item Either $S_l$ contains two children, $S_m,S_s$ and $S_r$ goes directly to a leaf $u$
+\item or $S_l$ goes directly to a leaf $u$ and $S_r$ contains two children, $S_m,S_s$.
+\end{itemize}
+We can capture this intuitive notion by the tree in Figure \ref{fig:M4}.
 \appendix
 \section{Appendix Title}
 
