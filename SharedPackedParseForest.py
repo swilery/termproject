@@ -1,8 +1,5 @@
 '''
-A forest is a collection of trees. A tree is a special type of graph. There
-will most likely be duplications of GrammarFlowGraph.py in this file. If we
-have time, (most likely we won't), we can have both GFG and SPPF inherit from
-a single Graph class.
+Our SPPF Graph class
 '''
 
 class NodeType:
@@ -47,22 +44,7 @@ class Edge:
 class SPPF:
     def __init__(self):
         self.nodes = set()
-        # we need to be able to look up nodes by names.
-        # didn't want to delete your code in case it does this
-        # using the edges dict won't work here as that will only pick up
-        # nodes with outgoing edges (aka not leaves)
         self.nodeNames = {}
-        
-        '''
-        This may be convoluted, but the intention is to have a dictionary in
-        which each key is a node u and each value is a set of nodes v such
-        that there is an edge from u to v. Intuitively, each node knows its
-        outgoing neighbors. It may or may not be useful for each nodes to know
-        its incoming neighbors as well.
-
-        I removed this. It is more helpful for each node to keep a list of its outgoing edges
-        and keep the dictionary of node names. (I think). I am open to reverting this back though.
-        '''
 
     def makeNode(self,name,startPos,endPos,nodeType):
         return Node(name,startPos,endPos,nodeType)
@@ -73,56 +55,46 @@ class SPPF:
     def addNode(self,node):
         self.nodes.add(node)
 
-    #again - this may be redundant. placeholder for now
-    # TODO: should be a list in the event of multiple nodes with the same name
-    # i don't think this will work for recursive grammars currently
     def updateNonLeafNodes(self,node):
         self.nodeNames[node.name] = node
 
     def addEdge(self,edge):
         edge.startNode.edges.append(edge)
-        '''
-        if edge.startNode in self.edges:
-            self.edges[edge.startNode].add(edge.endNode)
-        else:
-            self.edges.update({edge.startNode:{edge.endNode}})
-        '''
         edge.endNode.hasIncoming = True
 
-    #TODO: add and nodes / "families"
+    #This is based off of the pseudocode in Scott's paper
     def makeNodeAdvanced(self,productionString,startPos,endPos,sppfNodew,sppfNodev,toSearch):
+        #If the production is of the form B -> ax. (end of scan) we create a node named B
+        #If the production is of the form B -> x.y wecreate a node named the production
         after = productionString[productionString.find('.')+1:]
-        if len(after)==0:
+        if len(after)==0:           
             s = productionString[0:productionString.find('-')]
         else:
             s = productionString
         alpha = productionString[productionString.find('>')+1:productionString.find('.')]
-        alpha = alpha[0:alpha.find(toSearch)]
+        alpha = alpha[0:len(alpha)-len(toSearch)]
+        
         if len(after)>0 and len(alpha)==0:
             y = sppfNodev
-        else:                
+        else:
+            #First, we create the node itself, an OR node by default,
+            # or find it using our dictionary
             nodeName = s + str(startPos) + str(endPos)
             y = self.nodeNames.get(nodeName)
-            if y == None:
-                print "Created "+ nodeName
-                
+            if y == None:              
                 y = self.makeNode(nodeName,startPos,endPos,1)
                 self.updateNonLeafNodes(y)
-                print "\t\t "+str(y)
-            else:
-                print "Accessed node "+y.name
             foundV = False
             foundW = False
+
             '''
+            Next, we check the two nodes passed in: v and w
+            If neither is null, we want to check that a family (v,w) exists for our node y
+            If one or more is null, we want check that the appropriate family exists for node y
+            A family is identified by an AND node of the form AND+[v]+[w]
 
-            Loop through edges of node which should be FAMILIES
-            Check node name for each family to see if it is a concatenation of v + w (or just v if w is none)
-            If it is, do nothing
-            If not found,
-                add new family - AND node
-                    add two children v and w to new AND node
-                    
-
+            If a family we are expecting does not exist, we create one
+            
             '''
             searchString = "AND"
             if sppfNodew != None and sppfNodev != None and sppfNodew.name == sppfNodev.name:
@@ -132,78 +104,41 @@ class SPPF:
             if sppfNodev != None:
                 searchString = searchString + sppfNodev.name
             foundFamily = False
+            
             for e in y.edges:
                 if e.endNode.name == searchString:
                     foundFamily = True
 
             if not foundFamily:
-                #add AND node connect y - > AND node
-                #connect AND node -> v and -> w depending on if they exist
-                print "\t Created AND node/family labeled "+searchString
                 andNode = self.makeNode(searchString,startPos,endPos,0)
                 andEdge = self.makeEdge(y,andNode)
                 self.addEdge(andEdge)
                 if sppfNodew != None:
                     wEdge = self.makeEdge(andNode,sppfNodew)
                     self.addEdge(wEdge)
-                    print "\t child : "+sppfNodew.name
                 if sppfNodev != None:
                     vEdge = self.makeEdge(andNode,sppfNodev)
                     self.addEdge(vEdge)
-                    print "\t child : "+sppfNodev.name
-            '''
-            if sppfNodew == None:
-                for e in y.edges:
-                    if e.endNode.name == sppfNodev.name:
-                        foundV = True
-                if not foundV:
-                    print "\tAdded child "+sppfNodev.name
-                    print "\t\t "+str(sppfNodev)
-                    e = self.makeEdge(y,sppfNodev)
-                    self.addEdge(e)
-            else:
-                for e in y.edges:
-                    if sppfNodev != None:
-                        if e.endNode.name == sppfNodev.name:
-                            foundV = True
-                    if e.endNode.name == sppfNodew.name:
-                        foundW = True
-                #TODO: check if none?
-                if not foundV and sppfNodev != None:
-                    print "\tAdded child "+sppfNodev.name
-                    print "\t\t "+str(sppfNodev)
-                    e = self.makeEdge(y,sppfNodev)
-                    self.addEdge(e)
-                if not foundW:
-                    if (sppfNodev != None and sppfNodew.name != sppfNodev.name) or sppfNodev==None:
-                        print "\tAdded child "+sppfNodew.name
-                        print "\t\t "+str(sppfNodew)
-                        e = self.makeEdge(y,sppfNodew)
-                        self.addEdge(e)
-            '''
         return y
          
         
     def printSPPF(self,root):
-        print {n.toString() for n in self.nodes}
-        self.printNodeInfo(root)
-        # Crap, this is over 80 characters long.
-        #print {u.toString()+" -> "+str({v.toString() for v in vs}) for u,vs in self.edges.items()}
+        data = self.printNodeInfo(root)
+        print "Nodes:"
+        for d in data[0]:
+            print d
+        print "\n\nEdges:"
+        for e in data[1]:
+            print e
 
-    #Since I switched edges to be a list by node
-    # We can use a recursive function to print out the tree info
     def printNodeInfo(self,node):
-        print node.name + " has " + str(len(node.edges)) + " children"
-        for e in node.edges:
-            print e.endNode.toString()
-            self.printNodeInfo(e.endNode)
-
-    def findNode(self,root,node):
-        if root.name == node.name and root.startPos == node.startPos and root.endPos == root.endPos:
-            return root
-        for e in root.edges:
-            endNode = e.endNode
-            found = self.findNode(endNode,node)
-            if found != None:
-                return found
-        return None
+        visited, queue = set(), [node]
+        edges = set()
+        while queue:
+            treeNode = queue.pop(0)
+            if treeNode.toString() not in visited:
+                visited.add(treeNode.toString())
+                for e in treeNode.edges:
+                    queue.append(e.endNode)
+                    edges.add(e.startNode.toString() + "->" + e.endNode.toString())
+        return [visited, edges]
