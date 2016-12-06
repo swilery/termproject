@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  5 DEC 2016 22:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  6 DEC 2016 12:28
 entering extended mode
 **./termPaper.tex
 (termPaper.tex
@@ -673,7 +673,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [5]
-[6
+[6] [7
 
 ] (termPaper.aux) )
 (\end occurred inside a group at level 1)
@@ -681,10 +681,10 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 14133 strings out of 493634
- 279755 string characters out of 3141309
- 357673 words of memory out of 3000000
- 17261 multiletter control sequences out of 15000+200000
+ 14164 strings out of 493634
+ 280187 string characters out of 3141309
+ 357687 words of memory out of 3000000
+ 17292 multiletter control sequences out of 15000+200000
  29415 words of font info for 59 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
  55i,20n,65p,1713b,12490s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -706,9 +706,9 @@ x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files (x86
 pe1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/tim
 es/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.
 pfb>
-Output written on termPaper.pdf (6 pages, 213228 bytes).
+Output written on termPaper.pdf (7 pages, 220221 bytes).
 PDF statistics:
- 93 PDF objects out of 1000 (max. 8388607)
+ 98 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
