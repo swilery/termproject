@@ -13,7 +13,6 @@ class SSet:
         self.callSet = {}
         self.nodeSet = {}
         self.id = num
-        self.hasEndNode = endNode
         self.pathSet = {}
         
     def makeSigmaSetItem(self,node, counter, sppfNode=None):
@@ -25,8 +24,6 @@ class SSet:
         if self.nodeSet.get(key) == None: 
             sigmaItem = self.makeSigmaSetItem(node,counter, sppfNode)
             self.nodeSet[key] = sigmaItem
-            if node.value == "S.":
-                self.hasEndNode = key
         return sigmaItem
 
     def insertSigmaSetPathItem(self,node,counter,sppfNode=None):

@@ -26,7 +26,7 @@ class Edge:
 
 class GFG:
     dot = "."
-    DEBUG = True
+    DEBUG = False
     EPSILON = unichr(949)
 
     def __init__(self,grammarFile):

@@ -12,7 +12,6 @@ class Node:
         self.startPos = startPos
         self.endPos = endPos
         self.nodeType = nodeType
-        self.hasIncoming = False
         self.edges = []
 
     def toString(self):
@@ -60,7 +59,6 @@ class SPPF:
 
     def addEdge(self,edge):
         edge.startNode.edges.append(edge)
-        edge.endNode.hasIncoming = True
 
     #This is based off of the pseudocode in Scott's paper
     def makeNodeAdvanced(self,productionString,startPos,endPos,sppfNodew,sppfNodev,toSearch):
