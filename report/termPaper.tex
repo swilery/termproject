@@ -29,6 +29,7 @@
 % 11pt          To set in 11-point type instead of 9-point.
 % authoryear    To obtain author/year citation style instead of numeric.
 
+\usepackage[ruled,vlined]{algorithm2e}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{bm}
@@ -360,6 +361,138 @@ The data structure we have constructed is what Dr. Elizabeth Scott calls a Share
 
 \textit{Definition}: A \textit{Shared Packed Parse Forest (SPPF)} is a representation that reduces the space used to represent multiple parse trees of an ambiguous string. Nodes are are named $(x,j,i)$, when node $x$ matches substring $a_{j+1}\dots{a_i}$. Nodes which contain the same sub-tree are shared and nodes which represent the same substring for nonterminals with different parse trees are packed. 
 
+\section{Earley's Parser}
+Dr. Elizabeth Scott presented two algorithms that constructed SPPFs. The first algorithm decorates the Earley Sets with pointers as they are being constructed and subsequently walks through the sets using these pointers to create the SPPF. The second algorithm creates the SPPF as the Earley Sets are being constructed. We choose to discuss this second algorithm since the SPPF it produces is much cleaner than the one produced by the first algorithm. This is because some of the intermediate nodes created by the first algorithm are ignored by the second algorithm. The omission of these nodes not only decreases the size of the SPPF but also allows for a more efficient parser. 
+ 
+We will now discuss her algorithm which we will subsequently call the parser. At a high level, the parser loops through the characters in the input string, $a[1..n]$ and for each position $i$, it creates the Earley Set $\Sigma_{i-1}$ and connects the leaf node representing $a_i$ to the rest of the SPPF. This requires a modification the elements in the Earley Sets. Recall from Section 3 that each element in an Earley Set is a tuple $(n_g, t)$, where $n_g$ is a node in the GFG and $t$ is the tag associated with that node. We simply extend this tuple to include one more field, $(n_g, t, n_s)$, where $n_s$ is the associated SPPF node. Recall from section 4 that $n_s = (x,j,i)$ when node $x$ matches substring $a_{j+1}\dots{a_i}$. If an element in the Earley Set does not have an associated SPPF node, then $n_s$ is simply null.
+
+As we compute the $\epsilon$-closure over the GFG, we maintain two auxilliary sets, $Q$ and $R$. $Q$ contains the scan nodes we encountered in the current iteration while $R$ contains the other nodes. Intuitively $R$ is a worklist that contains the nodes that still need to be processed in the current iteration and $Q$ are the nodes that need to be processed to initialize the next Earley Set. Keep in mind that the whole point of an SPPF is to faciliate structure sharing, so when a node is desired we first check if it already exists. We maintain a cache, $V$, of nodes that are created in the current iteration for that purpose.
+
+Special care must be taken for Earley elements of the form $(n_g,i,n_s)$ when $n_g$ is an exit node in $\Sigma_i$. This indicates that no scan edges were traversed between the start node and the exit node, meaning we have encountered an $\epsilon$-production. Therefore the corresponding Earley element representing the call node must exist in $\Sigma_i$. The catch is that the Earley element representing the call node could be created after the the Earley element representing the exit node have already been processed. To this end, we maintain a set $H$ in which tuples of the form $(n_g,n_s)$ are added after $(n_g,i,n_s)\in{\Sigma_i}$ have been processed. Subsequently, when an Earley element representing a call node is processed, $H$ is consulted. 
+
+We now present her algorithm:
+\begin{algorithm}[!h]\label{alg:EP}
+	\caption{EarleyParser}
+	\textbf{Input:} 
+	\begin{itemize}
+	\item[] A grammar $\Gamma = (N,T,P,S)$
+	\item[] A string $a[1..n]$
+	\end{itemize}
+	\textbf{Output:} 
+	\begin{itemize}
+	\item[] The corresponding Earley Sets and SPPF if $G$ produces $a$
+	\end{itemize}
+	\textbf{begin}
+	
+	Initialize $\Sigma_0\dots{\Sigma_n}, R, Q', V = \emptyset$ \;
+	Begin at $(\bullet{S})$ in the GFG and compute the $\epsilon$-closure \;
+	\quad Let $n$ denote the reachable nodes that are not scan nodes \; 
+	\quad Add $(n,0,null)$ to $\Sigma_0$ \;
+	\quad Let $s$ denote the reachable nodes that are scan nodes \; 
+	\quad Add $(s,0,null)$ to $Q'$ \;
+	\For{\text{$0\leq{i\leq{n}}$}}
+	{
+	Set $R=\Sigma_i$, $Q=Q'$ \;
+	Initialize $H,Q'=\emptyset$ \;
+	$Worklist(R,Q,H,V)$ \;
+	Set $V=\emptyset$ \;
+	Create a node $v=(a_{i+1},i,i+1)$ \;
+	\While {\text{$Q\neq{\emptyset}$}}
+	{
+	Remove an element $q=(n_g,t,n_s)$ from $Q$ \;
+	$n_g$ is a scan node so there is an edge $(n_g,n'_g)$ in the GFG \;
+    $y=MakeNode(n'_g,t,i+1,n_s,v,V)$ \;
+    Let $n$ denote the reachable nodes that are not scan nodes \;
+    Add $(n'_g,t,y)$ to $\Sigma_{i+1}$ \;
+    Let $s$ denote the reachable nodes that are scan nodes \;
+    Add $(n'_g,t,y)$ to $Q'$ \;
+    }
+    }
+    Let $s_e$ by the end node for the Start Symbol \;
+    \eIf {\text{$(s_e,0,n_s)\in{\Sigma_n}$}}{\Return $n_s$}{fail} 
+    \textbf{end}
+\end{algorithm}
+
+\begin{algorithm}[!h]\label{alg:W}
+	\caption{Worklist}
+	\textbf{Input:} 
+	\begin{itemize}
+	\item[] $R$, the nodes that still need to be processed in the current iteration
+	\item[] $Q$, the nodes that need to be processed to initialize the next Earley Set 
+	\item[] $H$, the call nodes to epsilon productions
+	\item[] $V$, cache of nodes created during the current iteration
+	\end{itemize}
+	\textbf{begin}
+	\While {\text{$R\neq{\emptyset}$}}
+	{
+	Remove an element $r=(n_g,t,n_s)$ from $R$ \;
+	\If {\text{$r$ represents a call node for a nonterminal $C$}}
+	{
+	Compute the $\epsilon$-closure \;
+	\quad Let $n$ denote the reachable nodes that are not scan nodes \;
+	\quad Add $(n,i,null)$ to $\Sigma_i$ and $R$ if they are not in them already \;
+	\quad Let $s$ denote the reachable nodes that are scan nodes \; 
+	\quad Add $(s,i,null)$ to $Q$ \;
+    Let $n_e$ be the exit node corresponding to $n_g$ \;
+    \If {\text{$(n_e,n_s)\in{H}$}}
+    {
+    Let $n_h$ be the return node corresponding to $n_g$ \;
+	$y=MakeNode(n_h,t,i,n_s,null,V)$ \; 
+	Let $n$ denote the reachable nodes that are not scan nodes \;
+    Add $(n,t,y)$ to $\Sigma_i$ and $R$ if they are not in them already \;
+    Let $s$ denote the reachable nodes that are scan nodes \;
+    Add $(s,t,y)$ to $Q$ \;
+    }
+	}
+	\If {\text{$r$ represents an exit node for a nonterminal $D$}}
+	{
+	\If {\text{$n_s$ is null}}
+	{
+	Create a node $v=(n_g,i,i)$ if it is not already in $V$ \;
+	set $n_s = v$ \;
+	Make $\epsilon$ a child of $n_s$ if it isn't already \;
+	}
+	\If {$t == i$}{add $(n_g,n_s)$ to $H$}
+	\For {\text{$\sigma{\in{\Sigma_t}}$ representing call nodes, $n_c$, corresponding to $n_g$}}
+	{
+	Let $\sigma = (n_c,t',n'_s)$ \;
+	Let $n_h$ be the return nodes corresponding to $n_c$ \;
+    $y=MakeNode(n_h,t',i,n'_s,n_s,V)$ \;
+    Let $n$ denote the reachable nodes that are not scan nodes \;
+    Add $(n,t',y)$ to $\Sigma_i$ and $R$ if they are not in them already \; 
+    Let $s$ denote the reachable nodes that are scan nodes \;
+    Add $(s,t',y)$ to $Q$ \;
+	}
+	}
+	}
+	\textbf{end}
+\end{algorithm}
+
+\begin{algorithm}[!h]\label{alg:MN}
+	\caption{MakeNode}
+	\textbf{Input:} 
+	\begin{itemize}
+	\item[] $n_g$, a GFG node
+	\item[] $j,i$ substring indices where $j\leq{i}$
+	\item[] $w,v$, SPPF nodes
+	\item[] $V$, cache of nodes created during the current iteration
+	\end{itemize}
+	\textbf{Output:} 
+	\begin{itemize}
+	\item[] $y$, a new SPPF node
+	\end{itemize}
+	\textbf{begin}
+	
+	\eIf {\text{$n_g$ is an exit node of a nonterminal $B$}}{set $s=B$}{set $s=n_g$}
+	\eIf {\text{$n_g$ is the second scan node and not an exit node}}{set $y=v$}
+	{
+	Create a node $y=(s,j,i)$ if it is not already in $V$ and add it to $V$ \;
+	\If {\text{$w$ is null}}{make $v$ a child of $y$ if it isn't already}
+    \If {\text{$w$ is not null}}{make $w$ and $v$ children of $y$ if they aren't already}
+	}
+	\Return $y$ \;
+	\textbf{end}
+\end{algorithm}
 \appendix
 \section{Appendix Title}
 
