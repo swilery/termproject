@@ -98,8 +98,7 @@ Earley's Algorithm is a highly complex algorithm. To dramatically simplify its u
 \item Section 4 will introduce SPPFs
 \item Section 5 will introduce Dr. Scott's Algorithm for producing SPPFs
 \item Section 6 will discuss our implementation
-\item Section 7 will discuss our results
-\item Section 8 will conclude
+\item Section 7 will conclude with our results and future work
 \end{itemize}
 
 \section{Grammar Flow Graphs}
@@ -423,6 +422,7 @@ We now present her algorithm:
 	\item[] $V$, cache of nodes created during the current iteration
 	\end{itemize}
 	\textbf{begin}
+	
 	\While {\text{$R\neq{\emptyset}$}}
 	{
 	Remove an element $r=(n_g,t,n_s)$ from $R$ \;
@@ -493,10 +493,50 @@ We now present her algorithm:
 	\Return $y$ \;
 	\textbf{end}
 \end{algorithm}
-\appendix
-\section{Appendix Title}
 
-This is the text of the appendix, if you need one.
+\section{Implementation}
+We have coded up a faithful implementation of the Earley Parser using Python 2.7.6. Just like how the conceptual components of this paper have been broken up into 4 sections, we have broken up our code base into into 4 logical units in which each unit is a class that handles one major task. We will discuss the following in turn:
+\begin{itemize}
+\item GrammarFlowGraph.py
+\item SigmaSet.py
+\item SharedPackedParseForest.py
+\item earlyParser.py
+\end{itemize}
+
+\subsection{GrammarFlowGraph.py}
+Here contains the logic that handles GFG construction. There are 3 classes contained within this file: Node, Edge, and GFG. 
+
+Each Node has a name, the reference to its endNode, and a set of outgoing edges. An endNode of a Node $u$ is simply a Node that logically follows $u$ in its production. For instance, if $u=(A\longrightarrow{\bullet{BC}})$ then the endNode of u will be $(A\longrightarrow{B\bullet{C}})$. Finally we reserve a special field, callNode, for a Node's call node if it has one.
+
+Each Edge has a reference to its two endpoints and a weight, which is the label associated with it.
+
+Each GFG a contains a set of Nodes, of which a special field, startNode, is reserved for a GFG's start node. When GFG's constructor is called, the entire graph is built from a grammar file. The GFG is built by processing each line of the grammar file out of which a grammar production is extracted and the nonterminals added to the GFG if they do not already exist in the graph. We then walk through the production to create the appropriate Nodes and Edges in the GFG, taking special care when encoutering nonterminals so that we add their corresponding call and return edges.
+
+\subsection{SigmaSet.py}
+
+Here contains the logic that handles the interface for Earley Sets. There are 2 classes contained within this file: sigmaSetItem and SSet.
+
+Each sigmaSetItem consists of a node of the GFG, a counter, and a sppfNode. 
+
+Each SSet contains an id, a set callSet of call nodes, a pathSet that corresponds to the set Q in Algorithm \ref{alg:W}, and nodeSet that contains the rest of the GFG nodes. Finally, we reserve a special boolean to indicate with the accepting node, $(S\bullet)$ is within a SSet. 
+
+\subsection{SharedPackedParseForest.py}
+
+Here contains the logic that handles the interface for a Shared Packed Parse Forest. There are 4 classes contained within this file: NodeType, Node, Edge, and SPPF.
+
+NodeType is simply an object class for a Node to distinguish whether it is an \textit{and} node, an \textit{or} node, or a leaf node.
+
+Each Node has a name, a list of outgoing edges and a nodeType. In addition a Node keeps tracks of the startPos and the endPos which correspond to the indices of the substring it matches. Finally, Node has a flag to signal whether it has incoming edges.
+
+Each Edge has a reference to its two endpoints. 
+
+Each SPPF contains a set of Nodes and their associated names. We make note here that Algorithm \ref{alg:MN} belongs to this class.
+
+\subsection{earleyParser.py}
+
+Here contains the logic that handles the parser. There is 1 class contained within this file: Parser.
+
+Each Parser constructs a GFG, has a list of sigmaSets, and initializes an SPPF. When the Parser's constructor is called, the string file is parsed using the GFG. We make note that Algorithm \ref{alg:EP} gets invoked here.
 
 \acks
 We would like to thank Dr. Keshav Pingali for his guidance on this project. We would also like to thank Sepideh Maleki for helping us understand Scott's algorithm.

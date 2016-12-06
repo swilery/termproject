@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  5 DEC 2016 18:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  5 DEC 2016 22:53
 entering extended mode
 **./termPaper.tex
 (termPaper.tex
@@ -612,14 +612,14 @@ on-Deterministic
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <8> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 96.
 
-Overfull \hbox (5.62836pt too wide) in paragraph at lines 108--109
+Overfull \hbox (5.62836pt too wide) in paragraph at lines 107--108
 []\OT1/ptm/m/it/9 Definition: \OT1/ptm/m/n/9 A \OT1/ptm/m/it/9 context-free gra
 m-mar\OT1/ptm/m/n/9 , \OT1/ptm/m/it/9 CFG\OT1/ptm/m/n/9 , is a tu-ple $\OT1/cmr
 /m/n/9 (\OML/cmm/m/it/9 N; T; P; S\OT1/cmr/m/n/9 )$\OT1/ptm/m/n/9 ,
  []
 
 
-Overfull \hbox (13.05965pt too wide) in paragraph at lines 126--127
+Overfull \hbox (13.05965pt too wide) in paragraph at lines 125--126
 []\OT1/ptm/m/n/9 For each non-ter-mi-nal $\OML/cmm/m/it/9 M \OMS/cmsy/m/n/9 2 \
 OML/cmm/m/it/9 N$\OT1/ptm/m/n/9 , there ex-ist $\OT1/cmr/m/n/9 (\OMS/cmsy/m/n/9
  \OML/cmm/m/it/9 M\OT1/cmr/m/n/9 )$\OT1/ptm/m/n/9 ,$\OT1/cmr/m/n/9 (\OML/cmm/m
@@ -632,7 +632,7 @@ OML/cmm/m/it/9 N$\OT1/ptm/m/n/9 , there ex-ist $\OT1/cmr/m/n/9 (\OMS/cmsy/m/n/9
 Non-PDF special ignored!
 
 ]
-Overfull \hbox (6.85466pt too wide) in paragraph at lines 130--131
+Overfull \hbox (6.85466pt too wide) in paragraph at lines 129--130
 []$\OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cmsy/m/n/9 ! []\OT1/cmr/m/n/9 )\O
 ML/cmm/m/it/9 ; \OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cmsy/m/n/9 ! []\OT1/
 cmr/m/n/9 )\OML/cmm/m/it/9 ; [] ; \OT1/cmr/m/n/9 (\OML/cmm/m/it/9 M [][]\OMS/cm
@@ -644,7 +644,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
 [3]
-Overfull \hbox (12.0pt too wide) detected at line 414
+Overfull \hbox (12.0pt too wide) detected at line 413
 [][] 
  []
 
@@ -669,7 +669,13 @@ Overfull \hbox (12.0pt too wide) detected at line 495
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[4] [5] (termPaper.aux) )
+[4]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [5]
+[6
+
+] (termPaper.aux) )
 (\end occurred inside a group at level 1)
 
 ### simple group (level 1) entered at line 1061 ({)
@@ -677,7 +683,7 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 Here is how much of TeX's memory you used:
  14133 strings out of 493634
  279755 string characters out of 3141309
- 357671 words of memory out of 3000000
+ 357673 words of memory out of 3000000
  17261 multiletter control sequences out of 15000+200000
  29415 words of font info for 59 fonts, out of 3000000 for 9000
  1025 hyphenation exceptions out of 8191
@@ -700,9 +706,9 @@ x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/Program Files (x86
 pe1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/tim
 es/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.
 pfb>
-Output written on termPaper.pdf (5 pages, 209158 bytes).
+Output written on termPaper.pdf (6 pages, 213228 bytes).
 PDF statistics:
- 90 PDF objects out of 1000 (max. 8388607)
+ 93 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
