@@ -540,7 +540,7 @@ Each Parser constructs a GFG, has a list of sigmaSets, and initializes an SPPF. 
 
 \section{Results and Future Work}
 
-Feeding the grammar $$S\longrightarrow{S\:{S\:{|\:{b}}}}$$ along with the string $$"b\;{b\:{b}}"$$ into \textit{earleyParser.py} produces the output shown in Figure \ref{fig:M6}. The graph associated is depicted in Figure \ref{fig:M7}. Notice that the resulting SPPF produced by our implementation contains extra \textit{and} nodes. Although these extra nodes do not negatively effect the correctness, removing them using some post-processing would result in a much cleaner representation.
+Feeding the grammar $$S\longrightarrow{S\:{S\:{|\:{u}}}}$$ along with the string $$"u\;{u\:{u}}"$$ into \textit{earleyParser.py} produces the output shown in Figure \ref{fig:M6}. The graph associated is depicted in Figure \ref{fig:M7}. Notice that the resulting SPPF produced by our implementation contains extra \textit{and} nodes. Although these extra nodes do not negatively effect the correctness, removing them using some post-processing would result in a much cleaner representation.
 
 Another aspect of our implementation that could benefit from further development pertains to the source code itself. Notice that in the previous section we have two separate classes for Nodes and two separate classes for Edges. This repetition is not entirely intentional since the construction of our code base is inherently bottom-up. The next logical step would have been to create an abstract class for a Node, Edge and Graph then subsequently have the classes in \textit{GrammarFlowGraph.py} and \textit{SharedPackedParseForest.py} inherit from these base classes.
 
@@ -591,7 +591,7 @@ The most important insight we would like to be gleaned from our project is the i
 &<S02,0,2,OR>\longrightarrow<ANDS01S12,0,2,AND> \\
 &<S03,0,3,OR>\longrightarrow<ANDS02S23,0,3,AND> \\
 \end{align*}
-\caption{The output of our earleyParser when given $S\longrightarrow{S\:{S\:{|\:{b}}}}$ and the string "b b b".} \label{fig:M6}
+\caption{The output of our earleyParser when given $S\longrightarrow{S\:{S\:{|\:{u}}}}$ and the string "u u u".} \label{fig:M6}
 \end{center}
 \end{figure}
 
